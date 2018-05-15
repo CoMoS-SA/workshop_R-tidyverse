@@ -25,3 +25,9 @@ Friday 18/06/2018 | 10:30–12:30 | Aula 3 Toscanelli
 * __Statistical modeling__: automated approaches to estimation and model selection.
 
 Please bring your laptop and charger with [*R*](https://cran.r-project.org/) and [*RStudio*](https://www.rstudio.com/) installed.
+
+Try to install *tidyverse* as well:
+
+```R
+install.packages("tidyverse")
+``` 
