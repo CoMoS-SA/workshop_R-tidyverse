@@ -20,20 +20,25 @@ library(nycflights13)
 data(flights)
 ```
 
-## Preview data
+## Preview,, `glimpse` and `View` data
 
 Preview the data by invoking it: notice that not all variables are displayed for lack of space.
 ```{r}
 flights
 ```
 
-`glimpse()` shows all variables as rows, variable types, and a preview of first few observations.
+`glimpse` shows all variables as rows, variable types, and a preview of first few observations.
 ```{r}
 glimpse(flights)
 ```
 
+`View` shows the whole dataset in a dedicated tab of RStudio
+```{r}
+View(flights)
+```
 
-## filter: selects rows matching the conditions
+
+## `filter` rows matching conditions
 
 Keep only observations such that month = 1 AND day = 1
 ```{r}
@@ -52,13 +57,12 @@ Multiple conditions:
 * `!` as logical NOT
 * `,` or `&` as logical AND
 
-
 ```{r}
 flights %>% filter(month %in% c(1,2))
 ```
 
 
-# select() and pull() to select columns
+# `select` and `pull` variables
 
 We can select columns by name; the result is always a tibble.
 Pressing TAB with the cursorinside `select( )` provides variable name completion. 
@@ -82,7 +86,7 @@ flights %>% pull(carrier) %>% sort() %>% unique()
 ```
 
 
-# `summarise values
+## `summarise` values
 
 We can compute one or more variable summaries for the whole dataset (column-wise) using `summarise`.
 
@@ -112,7 +116,36 @@ flights %>% pull(dep_delay) %>% is.na() %>% sum()
 ```
 
 
-# Change values with `mutate`
+`group_by` summarises the values by groups:
+```{r}
+flights %>% 
+  group_by(carrier) %>% 
+  summarise(
+    n_miss_dep_delay = sum(is.na(dep_delay)),
+    n_miss_arr_delay = sum(is.na(arr_delay))
+  )
+```
+
+
+## `mutate` observations
+
+Mutate adds new variables based on functions provided while preserving existing ones, 
+
+```{r}
+flights %>% 
+  mutate(
+    distance_k = distance / 1000,
+    air_time_h = air_time / 60
+  ) %>% 
+  select(starts_with("distance"), starts_with("air_time"))
+```
+
+
+
+
+
+
+
 
 
 
