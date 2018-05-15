@@ -9,6 +9,9 @@ The workshop is intended mainly for first-year PhDs in Economics, but all *CoMoS
 
 The workshop covers topics on data science throughout a typical research project. No prior knowledge of *R* is required! Hopefully even those of you familiar with “base R” (but not the tidyverse) will find something new.
 
+The material is based on [*R for Data Science*](http://r4ds.had.co.nz/index.html) by Garrett Grolemund and Hadley Wickham. See also their book
+[*R for Data Science: Import, Tidy, Transform, Visualize, and Model Data *](https://www.amazon.it/dp/1491910399) published by O'Reilly Media, 2017.
+
 ## Schedule (TBC)
 
 Date | Time | Room 

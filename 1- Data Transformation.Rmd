@@ -1,0 +1,118 @@
+---
+title: "Data transformation with dplyr"
+author: "Matteo Sostero"
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+  
+## Load the tidyverse
+
+```{r echo=TRUE, message=FALSE}
+library(tidyverse)
+```
+
+## Load example data
+The *nycflights13* package contains different example datasets, including *flights*
+
+```{r}
+library(nycflights13)
+data(flights)
+```
+
+## Preview data
+
+Preview the data by invoking it: notice that not all variables are displayed for lack of space.
+```{r}
+flights
+```
+
+`glimpse()` shows all variables as rows, variable types, and a preview of first few observations.
+```{r}
+glimpse(flights)
+```
+
+
+## filter: selects rows matching the conditions
+
+Keep only observations such that month = 1 AND day = 1
+```{r}
+flights %>% filter(month == 1, day == 1)
+```
+
+Logical operators include:
+
+* `==` strict equality
+* `>`, `<`, `>=`, `<=` inequalities
+* `%in%` to test if element belongs to list
+* `is.na()` to test for missing value `NA`
+
+Multiple conditions: 
+
+* `!` as logical NOT
+* `,` or `&` as logical AND
+
+
+```{r}
+flights %>% filter(month %in% c(1,2))
+```
+
+
+# select() and pull() to select columns
+
+We can select columns by name; the result is always a tibble.
+Pressing TAB with the cursorinside `select( )` provides variable name completion. 
+```{r}
+flights %>% select(year, month, day, dep_time)
+```
+
+We can also select columns based on patterns in their names:
+```{r}
+flights %>% select(contains("dep"), starts_with("sched"))
+```
+
+`pull()` returns a single column as a vector or values 
+```{r}
+flights %>% pull(carrier)
+```
+
+We can combine this with `sort` (lexicographic sorting) and `unique` (deduplication) to see unique observations:
+```{r}
+flights %>% pull(carrier) %>% sort() %>% unique()
+```
+
+
+# `summarise values
+
+We can compute one or more variable summaries for the whole dataset (column-wise) using `summarise`.
+
+`mean(., na.rm = TRUE)` computes the average value, excluding missing values.
+
+```{r}
+flights %>% 
+  summarise(
+    avg_dep_delay = mean(dep_delay, na.rm = TRUE),
+    avg_arr_delay = mean(arr_delay, na.rm = TRUE)
+  )
+```
+
+How many missing values are there?
+```{r}
+flights %>% 
+  summarise(
+    n_miss_dep_delay = sum(is.na(dep_delay)),
+    n_miss_arr_delay = sum(is.na(arr_delay))
+    )
+```
+
+This works because `is.na(dep_delay)` returns a *logical vector* (TRUE, FALSE) for all values of `dep_delay`. `sum` adds the TRUE values: 
+
+```{r}
+flights %>% pull(dep_delay) %>% is.na() %>% sum()
+```
+
+
+# Change values with `mutate`
+
+
+
