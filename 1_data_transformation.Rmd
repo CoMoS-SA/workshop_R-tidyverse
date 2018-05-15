@@ -6,7 +6,7 @@ editor_options:
   chunk_output_type: console
 ---
   
-## Load the tidyverse
+## Load the tidyverse package
 
 ```{r echo=TRUE, message=FALSE}
 library(tidyverse)
@@ -20,7 +20,7 @@ library(nycflights13)
 data(flights)
 ```
 
-## Preview,, `glimpse` and `View` data
+## Preview, `glimpse` and `View` data
 
 Preview the data by invoking it: notice that not all variables are displayed for lack of space.
 ```{r}
@@ -140,8 +140,37 @@ flights %>%
   select(starts_with("distance"), starts_with("air_time"))
 ```
 
+# `arrange` to sort rows
+
+`arrange` sorts observations by lexicographic order of one or more variables. `desc` arranges in descending order
+
+```{r}
+flights %>% arrange(desc(carrier), dep_time)
+```
+
+`top_n` sorts and returns the top n entries by value
+
+```{r}
+flights %>% top_n(3, arr_delay)
+```
 
 
+## `join` (merge) tibbles by value
+
+`airlines` in `nycflights13` contains the full names of airlines, reported as `carrier`in flights
+```{r}
+data("airlines")
+airlines
+```
+
+`left_join(x, y, by)` return all rows from x where there are matching values in y, and all columns from x and y. If there are multiple matches between x and y, all combination of the matches are returned.
+
+See also `right_join`, `full_join`, `inner_join`, `anti_join`...
+
+```{r}
+left_join(flights, airlines, by = "carrier") %>% 
+  select(call_sign = carrier, carrier_name = name)
+```
 
 
 
