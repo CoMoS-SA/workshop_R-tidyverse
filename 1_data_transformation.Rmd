@@ -75,6 +75,11 @@ We can also select columns based on patterns in their names:
 flights %>% select(contains("dep"), starts_with("sched"))
 ```
 
+or select intervals based on position (careful!)
+```{r}
+flights %>% select(year:day)
+```
+
 `pull()` returns a single column as a vector or values 
 ```{r}
 flights %>% pull(carrier)
@@ -140,18 +145,60 @@ flights %>%
   select(starts_with("distance"), starts_with("air_time"))
 ```
 
-# `arrange` to sort rows
+
+## Count observations with `n` and `count`
+
+`n()` returns the total number of observation (in a group, if any).
+
+```{r}
+flights %>% group_by(carrier) %>% summarise(n())
+```
+
+`tally` is short-hand for `summarise(n())`
+```{r}
+flights %>% group_by(carrier) %>% tally()
+```
+
+and `count` is short-hand for `group_by(carrier) %>% tally() %>% ungroup()`
+```{r}
+flights %>% count(carrier)
+```
+
+Nevertheless, `n()` with `sum` or `length` can be used for composing functions inside `mutate` or `summarise`:
+
+what share of flights arrived late, for each airline?
+```{r}
+flights %>% group_by(carrier) %>% summarise(sh_late_arr = sum(arr_delay > 0, na.rm = TRUE)/n() )
+```
+
+
+## `arrange` to sort rows
 
 `arrange` sorts observations by lexicographic order of one or more variables. `desc` arranges in descending order
 
 ```{r}
-flights %>% arrange(desc(carrier), dep_time)
+flights %>% count(carrier) %>% arrange(desc(n))
 ```
 
 `top_n` sorts and returns the top n entries by value
-
 ```{r}
 flights %>% top_n(3, arr_delay)
+```
+
+
+## Keep unique rows with `distinct`
+
+`distinct` finds unique combinations of  *rows in tibbles*, while `unique` finds unique *elements in vectors*
+
+What are the destination from each airport?
+```{r}
+flights %>% distinct(origin, dest)
+```
+
+Keep *all columns* with unique combinations of (origin, dest). 
+Notice that this keeps the **first** observation of duplicated columns:
+```{r}
+flights %>% distinct(origin, dest, .keep_all = TRUE)
 ```
 
 
@@ -163,18 +210,174 @@ data("airlines")
 airlines
 ```
 
+Do `airlines` and `flights` have variables in common
+```{r}
+names(flights)
+names(airlines)
+
+intersect(names(flights), names(airlines))
+```
+
+What variables are in `airlines` but not in `flights`?
+```{r}
+setdiff(names(airlines), names(flights))
+```
+
+They have `carrier` is in common. Does it have common values between tibbles?
+```{r}
+airlines %>% pull(carrier) %>% unique()
+flights %>% pull(carrier) %>% unique()
+
+intersect(
+  airlines %>% pull(carrier) %>% unique(),
+  flights %>% pull(carrier) %>% unique()
+  )
+```
+
+Then we can join the tibbles, to add `name` (full carrier name) from `airlines` to `flights`.
+
 `left_join(x, y, by)` return all rows from x where there are matching values in y, and all columns from x and y. If there are multiple matches between x and y, all combination of the matches are returned.
 
 See also `right_join`, `full_join`, `inner_join`, `anti_join`...
+we use `select(new_name = name)` to rename variables on the spot.
 
 ```{r}
 left_join(flights, airlines, by = "carrier") %>% 
   select(call_sign = carrier, carrier_name = name)
 ```
 
+Did we miss anything? Compare results with `anti_join`
+
+```{r}
+anti_join(airlines, flights, by = "carrier")
+```
+
+Let's add a ficticious "SA" "Sant'Anna" airline and see:
+```{r}
+airlines_sa <- airlines %>%
+  add_row(carrier = "SA", name = "Sant'Anna Airlines")
+```
+
+```{r}
+anti_join(airlines_sa, flights, by = "carrier")
+```
+
+
+## Variable types
+```{r}
+flights %>% glimpse()
+```
+
+Return variable types with typeof
+```{r}
+flights %>% pull(dep_time) %>% typeof()
+flights %>% pull(dep_delay) %>% typeof()
+flights %>% pull(carrier) %>% typeof()
+flights %>% pull(time_hour) %>% typeof()
+```
+
+What are object types are there in R?
+```{r}
+typeof(1)
+typeof(1.0)
+
+typeof(1L)
+
+typeof(c(1,2))
+
+typeof(c("a","b"))
+typeof(c("1","2"))
+
+typeof(c(TRUE,FALSE))
+typeof(NA)
+
+typeof(c(1,2) == 1 )
+```
+
+
+## Factors
+
+objects of type `factor` are convenient to work with categorical values. 
+We can transform (typically `character`) objects with `factor`
+
+```{r}
+flights %>% pull(carrier)
+
+carriers <- flights %>% pull(carrier) %>% factor()
+
+levels(carriers)
+flights %>% pull(carrier) %>% sort() %>% unique()
+```
+
+manually set factor levels:
+```{r}
+c("a", "b") %>% factor(levels = c("a", "b"))
+c("a", "b") %>% factor(levels = c("a", "b", "c"))
+c("a", "b", "z") %>% factor(levels = c("a", "b", "c"))
+```
+
+assign meaningful labels to factor levels:
+```{r}
+c("a", "b") %>% factor()
+c("a", "b") %>% factor(labels = c("alpha", "beta"))
+```
+
+
+work within `flights` tibble to change `carrier` to factor:
+```{r}
+flights %>% mutate(carrier = factor(carrier))
+```
+
+since airlines uniquely maps carrier codes in airline names, we can use that to set factor levels
+```{r}
+flights %>%
+  mutate(
+    carrier = factor(
+      carrier,
+      levels = airlines %>% pull(carrier), 
+      labels = airlines %>% pull(name)
+    )
+  ) %>% 
+  select(year:day, carrier)
+```
+
+in shorhand:
+```{r}
+flights %>%
+  mutate(carrier = factor(carrier, levels = airlines$carrier, labels = airlines$name))
+```
 
 
 
+## Data input and output
+
+Import a table with `read_csv` (NB, different than `read.csv`)
+
+```{r}
+flights_import <- read_csv("./data/flights.csv")
+
+glimpse(flights_import)
+```
+
+```{r}
+challenge <- read_csv("./data/challenge.csv")
+```
+
+what's wrong? let's inspect:
+```{r}
+problems(challenge)
+```
 
 
+```{r}
+challenge <- read_csv(readr_example("challenge.csv"), guess_max = 1500)
+```
 
+`readr` tries to guess the type of object based on heuristics: 
+
+```{r}
+guess_parser("1,234")
+guess_parser(c(".", "-"))
+guess_parser(c("10W", "20N"))
+guess_parser("10:30")
+```
