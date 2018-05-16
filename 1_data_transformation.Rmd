@@ -5,12 +5,24 @@ output: github_document
 editor_options: 
   chunk_output_type: console
 ---
-  
+
+## Install required packages
+
+We need `tidyverse` and related dependencies, and example data provided by`nycflights13`.
+
+`CTRL/CMD + ENTER` to run the block of code below:
+
+```{r eval=FALSE, message=FALSE, include=FALSE}
+install.packages(c("tidyverse", "nycflights13"))
+```
+
+
 ## Load the tidyverse package
 
-```{r echo=TRUE, message=FALSE}
+```{r}
 library(tidyverse)
 ```
+
 
 ## Load example data
 The *nycflights13* package contains different example datasets, including *flights*
@@ -58,16 +70,16 @@ Multiple conditions:
 * `,` or `&` as logical AND
 
 ```{r}
-flights %>% filter(month %in% c(1,2))
+flights %>% filter(month %in% c(2,4))
 ```
 
 
-# `select` and `pull` variables
+## `select` and `pull` variables
 
 We can select columns by name; the result is always a tibble.
 Pressing TAB with the cursorinside `select( )` provides variable name completion. 
 ```{r}
-flights %>% select(year, month, day, dep_time)
+flights %>% select(year, month, day, dep_time, dep_delay)
 ```
 
 We can also select columns based on patterns in their names:
@@ -126,8 +138,8 @@ flights %>% pull(dep_delay) %>% is.na() %>% sum()
 flights %>% 
   group_by(carrier) %>% 
   summarise(
-    n_miss_dep_delay = sum(is.na(dep_delay)),
-    n_miss_arr_delay = sum(is.na(arr_delay))
+    avg_dep_delay = mean(dep_delay, na.rm = TRUE),
+    avg_arr_delay = mean(arr_delay, na.rm = TRUE)
   )
 ```
 
@@ -151,7 +163,7 @@ flights %>%
 `n()` returns the total number of observation (in a group, if any).
 
 ```{r}
-flights %>% group_by(carrier) %>% summarise(n())
+flights %>% group_by(carrier) %>% summarise(total_obs = n())
 ```
 
 `tally` is short-hand for `summarise(n())`
@@ -161,7 +173,8 @@ flights %>% group_by(carrier) %>% tally()
 
 and `count` is short-hand for `group_by(carrier) %>% tally() %>% ungroup()`
 ```{r}
-flights %>% count(carrier)
+flights %>% count(carrier) 
+flights %>% count(carrier, dest) 
 ```
 
 Nevertheless, `n()` with `sum` or `length` can be used for composing functions inside `mutate` or `summarise`:
@@ -182,7 +195,7 @@ flights %>% count(carrier) %>% arrange(desc(n))
 
 `top_n` sorts and returns the top n entries by value
 ```{r}
-flights %>% top_n(3, arr_delay)
+flights %>% top_n(10, arr_delay)
 ```
 
 
@@ -218,15 +231,16 @@ names(airlines)
 intersect(names(flights), names(airlines))
 ```
 
-What variables are in `airlines` but not in `flights`?
+What variables are in `airlines` but not in `flights` (and viceversa)?
 ```{r}
 setdiff(names(airlines), names(flights))
+setdiff(names(flights), names(airlines))
 ```
 
 They have `carrier` is in common. Does it have common values between tibbles?
 ```{r}
-airlines %>% pull(carrier) %>% unique()
-flights %>% pull(carrier) %>% unique()
+airlines %>% pull(carrier) %>% unique() %>% sort()
+flights %>% pull(carrier) %>% unique() %>% sort()
 
 intersect(
   airlines %>% pull(carrier) %>% unique(),
@@ -256,128 +270,7 @@ Let's add a ficticious "SA" "Sant'Anna" airline and see:
 ```{r}
 airlines_sa <- airlines %>%
   add_row(carrier = "SA", name = "Sant'Anna Airlines")
-```
 
-```{r}
 anti_join(airlines_sa, flights, by = "carrier")
 ```
 
-
-## Variable types
-```{r}
-flights %>% glimpse()
-```
-
-Return variable types with typeof
-```{r}
-flights %>% pull(dep_time) %>% typeof()
-flights %>% pull(dep_delay) %>% typeof()
-flights %>% pull(carrier) %>% typeof()
-flights %>% pull(time_hour) %>% typeof()
-```
-
-What are object types are there in R?
-```{r}
-typeof(1)
-typeof(1.0)
-
-typeof(1L)
-
-typeof(c(1,2))
-
-typeof(c("a","b"))
-typeof(c("1","2"))
-
-typeof(c(TRUE,FALSE))
-typeof(NA)
-
-typeof(c(1,2) == 1 )
-```
-
-
-## Factors
-
-objects of type `factor` are convenient to work with categorical values. 
-We can transform (typically `character`) objects with `factor`
-
-```{r}
-flights %>% pull(carrier)
-
-carriers <- flights %>% pull(carrier) %>% factor()
-
-levels(carriers)
-flights %>% pull(carrier) %>% sort() %>% unique()
-```
-
-manually set factor levels:
-```{r}
-c("a", "b") %>% factor(levels = c("a", "b"))
-c("a", "b") %>% factor(levels = c("a", "b", "c"))
-c("a", "b", "z") %>% factor(levels = c("a", "b", "c"))
-```
-
-assign meaningful labels to factor levels:
-```{r}
-c("a", "b") %>% factor()
-c("a", "b") %>% factor(labels = c("alpha", "beta"))
-```
-
-
-work within `flights` tibble to change `carrier` to factor:
-```{r}
-flights %>% mutate(carrier = factor(carrier))
-```
-
-since airlines uniquely maps carrier codes in airline names, we can use that to set factor levels
-```{r}
-flights %>%
-  mutate(
-    carrier = factor(
-      carrier,
-      levels = airlines %>% pull(carrier), 
-      labels = airlines %>% pull(name)
-    )
-  ) %>% 
-  select(year:day, carrier)
-```
-
-in shorhand:
-```{r}
-flights %>%
-  mutate(carrier = factor(carrier, levels = airlines$carrier, labels = airlines$name))
-```
-
-
-
-## Data input and output
-
-Import a table with `read_csv` (NB, different than `read.csv`)
-
-```{r}
-flights_import <- read_csv("./data/flights.csv")
-
-glimpse(flights_import)
-```
-
-```{r}
-challenge <- read_csv("./data/challenge.csv")
-```
-
-what's wrong? let's inspect:
-```{r}
-problems(challenge)
-```
-
-
-```{r}
-challenge <- read_csv(readr_example("challenge.csv"), guess_max = 1500)
-```
-
-`readr` tries to guess the type of object based on heuristics: 
-
-```{r}
-guess_parser("1,234")
-guess_parser(c(".", "-"))
-guess_parser(c("10W", "20N"))
-guess_parser("10:30")
-```
