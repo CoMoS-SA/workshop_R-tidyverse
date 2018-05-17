@@ -1,0 +1,66 @@
+---
+title: "Data input and output"
+author: "Matteo Sostero"
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Load the packages for this session
+`tidyverse` loads (eight) packages of the *tidyverse* and shows their version.
+
+```{r}
+library(tidyverse)
+```
+
+## Data input and output
+
+Import a table with `read_csv` (NB, different than `read.csv`!). 
+
+`read_csv` parses variables by guessing the column types based on heuristics:
+
+```{r}
+flights_import <- read_csv("./data/flights.csv")
+
+glimpse(flights_import)
+```
+
+Let's try with a tricky file
+```{r}
+challenge <- read_csv("./data/challenge.csv")
+```
+
+what's wrong? let's inspect:
+```{r}
+problems(challenge)
+```
+
+we help `read_csv` parser by scanning more rows before guessing type:
+```{r}
+challenge <- read_csv("./data/challenge.csv", guess_max = 1500)
+```
+
+we can also specify column types manually:
+```{r}
+challenge <- read_csv("./data/challenge.csv", col_types = list(x = col_double(), y = col_date()))
+```
+
+_pro-tip__: import problematic columns as character and inspect them:
+```{r}
+challenge <- read_csv("./data/challenge.csv", col_types = list(x = col_double(), y = col_character()))
+
+challenge %>% pull(y) %>% sort() %>% unique()
+```
+
+`readr` tries to guess the type of object based on heuristics: 
+```{r}
+guess_parser("123")
+guess_parser("1,234")
+guess_parser(c(".", "-"))
+guess_parser(c("10W", "20N"))
+guess_parser("10:30")
+```
+
+
+
+

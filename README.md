@@ -17,7 +17,7 @@ See also their book [*R for Data Science: Import, Tidy, Transform, Visualize, an
 
 Date                 | Time        | Room              | Code 
 --                   | --          | --                | --   
-Wednesday 16/06/2018 | 10:30–12:30 | Aula 3 Toscanelli | [1_data_transformation.Rmd](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/1_data_transformation.md) 
+Wednesday 16/06/2018 | 10:30–12:30 | Aula 3 Toscanelli | [1_data_transformation.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/1_data_transformation.md) 
 Thursday 17/06/2018  | 10:30–12:30 | Aula 3 Toscanelli |      
 Friday 18/06/2018    | 10:30–12:30 | Aula 3 Toscanelli |      
 
@@ -30,7 +30,7 @@ Friday 18/06/2018    | 10:30–12:30 | Aula 3 Toscanelli |
 * (Windows only) install [Rtools](https://cran.r-project.org/bin/windows/Rtools/);
 * Install [git](https://git-scm.com/download/) on your system;
 * Get a copy of the material:
-    1. Create a new project in RStudio:`File > New Project > Version Control > Git`
+    1. Create a new project in RStudio: `File > New Project > Version Control > Git`
     2. The repository URL is [https://github.com/CoMoS-SA/workshop-R-tidyverse.git](https://github.com/CoMoS-SA/workshop-R-tidyverse.git)
     3. Open in new session
 * In RStudio, install *tidyverse* and *nycflights13* in *R*:

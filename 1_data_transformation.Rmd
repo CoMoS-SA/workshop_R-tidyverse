@@ -1,5 +1,5 @@
 ---
-title: "Data transformation with dplyr"
+title: "Data transformation"
 author: "Matteo Sostero"
 output: github_document
 editor_options: 
@@ -17,18 +17,20 @@ install.packages(c("tidyverse", "nycflights13"))
 ```
 
 
-## Load the tidyverse package
+## Load the packages for this session
+`tidyverse` loads (eight) packages of the *tidyverse* and shows their version.
+The *nycflights13* package contains different example datasets, including *flights*
 
 ```{r}
 library(tidyverse)
+library(nycflights13)
 ```
 
 
 ## Load example data
-The *nycflights13* package contains different example datasets, including *flights*
 
+load the `flights` dataset from `nycflights13`
 ```{r}
-library(nycflights13)
 data(flights)
 ```
 
@@ -273,4 +275,166 @@ airlines_sa <- airlines %>%
 
 anti_join(airlines_sa, flights, by = "carrier")
 ```
+
+
+## Variable types
+`glimpse` shows all variable names and `<types>`, including:
+
+* `<int>` **integer**: *signed* (positive or negative) integer
+* `<dbl>` **double**: "double-precision" real number
+* `<chr>` **character**: character string
+* `<fct>` **factor**: categorical variable
+* `<dttm>` **date-time**
+
+```{r}
+flights %>% glimpse()
+```
+
+Inspect variable types with typeof:
+```{r}
+flights %>% pull(dep_time) %>% typeof()
+flights %>% pull(dep_delay) %>% typeof()
+flights %>% pull(carrier) %>% typeof()
+flights %>% pull(time_hour) %>% typeof()
+```
+
+What are object types are there in R?
+
+```{r}
+# Numbers are doubles by default…
+typeof(1.0)
+typeof(1)
+
+# …unless specified as integers with `L` or coerced
+typeof(1L)
+as.integer(1) %>% typeof()
+
+# strings:
+typeof("a")
+
+```
+
+
+## *atomic vector* and *list* classes
+
+The main type of *R* objects are *vectors*, either:
+
+1. __lists__: (heterogeneous) contain elements of different type;
+2. __atomic vectors__: contain elements of same type:
+    1. *numeric*: *integer* or *double*
+    2. *character*
+    3. *logical*
+    4. *complex*
+    5. *raw*
+    
+<!-- the `NULL` type (distinct from `NA`)  -->
+    
+We can construct __atomic vectors__ by *concatenating* `,`-sepatated elements with `c( )` 
+
+Atomic vectors:
+```{r}
+# numeric double
+typeof(c(1, 2, 3))
+
+# numeric integer
+typeof(c(1L, 2L, 3L))
+
+# …character…
+typeof(c("a","b"))
+typeof(c("1","2"))
+
+# …logical…
+typeof(c(TRUE,FALSE))
+typeof(NA)
+typeof(c(1,2) == 1 )
+
+```
+
+
+We can initialise empty __lists__ of lenght *n* with `vector("list", n)` and assign elements by positions
+
+```{r}
+ex_list <- vector("list", 4) # initialise list
+
+ex_list # empty list
+
+# assign elements to list by position:
+ex_list[[1]] <- 10L # a lonely integer in the 1st slot
+ex_list[[2]] <- c("a", "b") # an atomic character vector in 2nd slot
+ex_list[[3]] <- c(1.1, 2.2) # an atomic double vector in 3rd slot
+ex_list[[4]] <- c(NA, TRUE, FALSE) # an atomic logical vector in 3rd slot
+
+ex_list # populated list
+```
+
+
+## Factors
+
+`factor` variables are convenient to work with categorical values. 
+We can transform (typically `character`) objects with `factor`
+
+```{r}
+flights %>%
+  pull(carrier) %>%
+  head(n = 10) # show only first 10 elements
+
+carriers <- flights %>% pull(carrier) %>% factor()
+
+levels(carriers)
+flights %>% pull(carrier) %>% sort() %>% unique()
+
+typeof(carriers) # factors are stored as type integer
+```
+
+
+We can manually set factor levels:
+```{r}
+c("a", "b") %>% factor(levels = c("a", "b"))           # levels all observed in the vector
+c("a", "b") %>% factor(levels = c("a", "b", "c"))      # as before, and one more level
+c("a", "b", "z") %>% factor(levels = c("a", "b", "c")) # levels in data are different
+```
+
+Assign meaningful labels to factor levels. By default, levels are *unique, sorted* values, unless we provide a custom order
+```{r}
+c("a", "b") %>% factor() # by default, levels and labels are unique sorted values
+c("a", "b") %>% factor(levels = c("b", "a")) # custom level order
+```
+
+We can change how levels are labelled by setting `labels` (in the same order as `levels`):
+```{r}
+c("a", "b") %>% factor(labels = c("alpha", "beta")) # "a" = "alpha" and "b" = "beta"
+c("a", "b") %>% factor(labels = c("beta", "alpha")) # mind the order! "a" = "beta" and "b" = "alpha"
+
+# better carefully set both levels and labels:
+c("a", "b") %>% factor(levels = c("b", "a"), labels = c("beta", "alpha")) 
+```
+
+
+Example: work within `flights` tibble to change `carrier` to factor:
+```{r}
+flights %>%
+  mutate(carrier = factor(carrier)) %>%
+  select(year:day, carrier)
+```
+
+since airlines uniquely maps carrier codes in airline names, we can use that to set factor levels
+```{r}
+flights %>%
+  mutate(
+    carrier = factor(
+      carrier,
+      levels = airlines %>% pull(carrier), 
+      labels = airlines %>% pull(name)
+    )
+  ) %>% 
+  select(year:day, carrier)
+```
+
+in shorhand, using `$` to select a variable in a tibble
+```{r}
+flights %>%
+  mutate(carrier = factor(carrier, levels = airlines$carrier, labels = airlines$name)) %>% 
+  select(year:day, carrier)
+```
+
 
