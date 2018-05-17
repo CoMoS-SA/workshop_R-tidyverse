@@ -1,4 +1,4 @@
-Data transformation with dplyr
+Data transformation
 ================
 Matteo Sostero
 
@@ -9,31 +9,36 @@ We need `tidyverse` and related dependencies, and example data provided by`nycfl
 
 `CTRL/CMD + ENTER` to run the block of code below:
 
-Load the tidyverse package
---------------------------
+Load the packages for this session
+----------------------------------
+
+`tidyverse` loads (eight) packages of the *tidyverse* and shows their version. The *nycflights13* package contains different example datasets, including *flights*
 
 ``` r
 library(tidyverse)
 ```
 
-    ## -- Attaching packages -------------------------------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages ---------------------------------------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 2.2.1     v purrr   0.2.4
     ## v tibble  1.4.2     v dplyr   0.7.4
     ## v tidyr   0.8.0     v stringr 1.3.1
     ## v readr   1.1.1     v forcats 0.3.0
 
-    ## -- Conflicts ----------------------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ------------------------------------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
+
+``` r
+library(nycflights13)
+```
 
 Load example data
 -----------------
 
-The *nycflights13* package contains different example datasets, including *flights*
+load the `flights` dataset from `nycflights13`
 
 ``` r
-library(nycflights13)
 data(flights)
 ```
 
@@ -231,79 +236,9 @@ flights %>% select(year:day)
 flights %>% pull(carrier)
 ```
 
-    ##   [1] "UA" "UA" "AA" "B6" "DL" "UA" "B6" "EV" "B6" "AA" "B6" "B6" "UA" "UA"
-    ##  [15] "AA" "B6" "UA" "B6" "MQ" "B6" "DL" "MQ" "AA" "DL" "UA" "MQ" "UA" "B6"
-    ##  [29] "B6" "DL" "US" "AA" "UA" "EV" "MQ" "US" "AA" "UA" "AA" "WN" "US" "EV"
-    ##  [43] "AA" "B6" "B6" "UA" "US" "UA" "B6" "UA" "UA" "B6" "B6" "DL" "DL" "DL"
-    ##  [57] "DL" "AA" "AA" "MQ" "UA" "DL" "DL" "VX" "AA" "B6" "DL" "UA" "UA" "B6"
-    ##  [71] "UA" "B6" "AA" "UA" "FL" "B6" "UA" "AA" "AS" "AA" "UA" "UA" "VX" "B6"
-    ##  [85] "B6" "UA" "B6" "B6" "AA" "UA" "B6" "AA" "B6" "DL" "AA" "UA" "MQ" "DL"
-    ##  [99] "UA" "US" "AA" "DL" "WN" "B6" "DL" "DL" "MQ" "B6" "AA" "UA" "DL" "B6"
-    ## [113] "B6" "MQ" "DL" "EV" "9E" "DL" "EV" "MQ" "US" "EV" "DL" "FL" "B6" "B6"
-    ## [127] "DL" "DL" "B6" "MQ" "EV" "US" "UA" "AA" "B6" "AA" "UA" "B6" "UA" "UA"
-    ## [141] "UA" "AA" "MQ" "EV" "MQ" "F9" "AA" "MQ" "AA" "DL" "B6" "MQ" "UA" "EV"
-    ## [155] "DL" "UA" "WN" "B6" "DL" "AA" "DL" "UA" "HA" "DL" "DL" "UA" "MQ" "DL"
-    ## [169] "VX" "UA" "UA" "MQ" "UA" "B6" "UA" "B6" "US" "UA" "AA" "AA" "UA" "UA"
-    ## [183] "AA" "UA" "AA" "B6" "B6" "B6" "MQ" "DL" "B6" "B6" "B6" "UA" "DL" "EV"
-    ## [197] "WN" "UA" "B6" "UA" "VX" "B6" "B6" "WN" "DL" "DL" "B6" "WN" "AA" "MQ"
-    ## [211] "B6" "EV" "B6" "EV" "MQ" "UA" "US" "DL" "UA" "DL" "US" "B6" "US" "UA"
-    ## [225] "MQ" "DL" "US" "US" "EV" "DL" "FL" "EV" "MQ" "AA" "UA" "AA" "UA" "AA"
-    ## [239] "EV" "VX" "UA" "EV" "UA" "AA" "UA" "B6" "EV" "UA" "UA" "AA" "DL" "MQ"
-    ## [253] "B6" "DL" "EV" "DL" "US" "WN" "MQ" "UA" "B6" "DL" "UA" "MQ" "AA" "B6"
-    ## [267] "UA" "DL" "UA" "EV" "WN" "UA" "B6" "DL" "US" "EV" "UA" "UA" "UA" "AA"
-    ## [281] "DL" "MQ" "B6" "VX" "AA" "DL" "UA" "EV" "FL" "EV" "EV" "B6" "DL" "B6"
-    ## [295] "MQ" "AA" "DL" "DL" "MQ" "EV" "MQ" "UA" "AA" "WN" "UA" "US" "EV" "UA"
-    ## [309] "EV" "VX" "B6" "UA" "EV" "B6" "EV" "MQ" "UA" "AA" "DL" "WN" "EV" "B6"
-    ## [323] "UA" "EV" "DL" "UA" "AA" "WN" "EV" "AA" "MQ" "EV" "DL" "DL" "B6" "UA"
-    ## [337] "B6" "AA" "UA" "DL" "WN" "MQ" "US" "US" "B6" "MQ" "FL" "AA" "AA" "MQ"
-    ## [351] "UA" "B6" "UA" "EV" "B6" "MQ" "AA" "WN" "B6" "US" "EV" "EV" "MQ" "EV"
-    ## [365] "B6" "UA" "DL" "DL" "VX" "UA" "EV" "B6" "EV" "B6" "AA" "B6" "AA" "EV"
-    ## [379] "AA" "UA" "WN" "EV" "B6" "EV" "EV" "EV" "DL" "EV" "B6" "WN" "MQ" "UA"
-    ## [393] "UA" "UA" "US" "EV" "DL" "EV" "FL" "B6" "UA" "UA" "MQ" "B6" "B6" "DL"
-    ## [407] "MQ" "UA" "EV" "EV" "EV" "B6" "UA" "UA" "B6" "UA" "DL" "DL" "DL" "DL"
-    ## [421] "AA" "EV" "AA" "MQ" "AA" "US" "MQ" "9E" "9E" "B6" "MQ" "US" "EV" "9E"
-    ## [435] "DL" "B6" "B6" "DL" "UA" "UA" "UA" "US" "MQ" "EV" "UA" "B6" "UA" "EV"
-    ## [449] "MQ" "AA" "UA" "9E" "MQ" "UA" "B6" "DL" "DL" "B6" "EV" "MQ" "B6" "UA"
-    ## [463] "AA" "MQ" "UA" "DL" "MQ" "UA" "UA" "B6" "B6" "MQ" "WN" "AA" "B6" "B6"
-    ## [477] "UA" "EV" "AA" "UA" "US" "9E" "EV" "EV" "UA" "EV" "WN" "DL" "AA" "AA"
-    ## [491] "UA" "B6" "DL" "DL" "UA" "9E" "DL" "MQ" "EV" "UA" "9E" "EV" "FL" "9E"
-    ## [505] "AA" "9E" "DL" "MQ" "EV" "DL" "UA" "EV" "EV" "B6" "DL" "9E" "UA" "DL"
-    ## [519] "EV" "B6" "WN" "MQ" "UA" "MQ" "AA" "B6" "UA" "AA" "AA" "B6" "DL" "DL"
-    ## [533] "DL" "UA" "EV" "MQ" "UA" "DL" "US" "AA" "B6" "DL" "B6" "VX" "EV" "DL"
-    ## [547] "EV" "B6" "EV" "US" "UA" "WN" "MQ" "UA" "UA" "B6" "9E" "EV" "MQ" "AA"
-    ## [561] "UA" "EV" "EV" "B6" "B6" "AA" "DL" "EV" "DL" "EV" "AA" "DL" "VX" "AA"
-    ## [575] "WN" "UA" "MQ" "AA" "UA" "UA" "AA" "US" "DL" "UA" "WN" "EV" "B6" "B6"
-    ## [589] "UA" "UA" "B6" "AA" "F9" "B6" "UA" "AA" "B6" "MQ" "DL" "US" "UA" "AA"
-    ## [603] "UA" "AA" "EV" "UA" "FL" "B6" "UA" "EV" "B6" "B6" "DL" "DL" "DL" "MQ"
-    ## [617] "DL" "9E" "B6" "B6" "DL" "WN" "B6" "UA" "B6" "WN" "B6" "UA" "EV" "DL"
-    ## [631] "B6" "B6" "UA" "EV" "B6" "UA" "DL" "UA" "EV" "MQ" "US" "UA" "MQ" "UA"
-    ## [645] "AS" "B6" "UA" "EV" "B6" "EV" "WN" "MQ" "UA" "AA" "AA" "DL" "AA" "9E"
-    ## [659] "US" "AA" "DL" "UA" "EV" "UA" "EV" "9E" "UA" "MQ" "UA" "EV" "B6" "MQ"
-    ## [673] "UA" "EV" "UA" "AA" "DL" "DL" "AA" "AA" "AA" "FL" "EV" "9E" "VX" "US"
-    ## [687] "MQ" "DL" "UA" "AA" "B6" "DL" "WN" "EV" "DL" "B6" "DL" "UA" "DL" "DL"
-    ## [701] "B6" "DL" "EV" "9E" "US" "MQ" "DL" "UA" "DL" "UA" "AA" "EV" "DL" "EV"
-    ## [715] "B6" "EV" "DL" "AA" "9E" "UA" "DL" "MQ" "EV" "AA" "EV" "9E" "AA" "UA"
-    ## [729] "B6" "MQ" "9E" "EV" "B6" "EV" "VX" "UA" "9E" "9E" "B6" "UA" "DL" "UA"
-    ## [743] "EV" "9E" "AA" "UA" "EV" "UA" "MQ" "MQ" "EV" "UA" "AA" "9E" "EV" "MQ"
-    ## [757] "9E" "B6" "UA" "FL" "B6" "9E" "B6" "DL" "UA" "EV" "B6" "WN" "EV" "AA"
-    ## [771] "B6" "B6" "UA" "UA" "UA" "EV" "B6" "9E" "UA" "MQ" "B6" "B6" "MQ" "UA"
-    ## [785] "EV" "EV" "B6" "MQ" "MQ" "EV" "WN" "UA" "MQ" "B6" "UA" "DL" "B6" "UA"
-    ## [799] "B6" "MQ" "EV" "9E" "EV" "EV" "B6" "B6" "MQ" "AA" "MQ" "B6" "UA" "B6"
-    ## [813] "B6" "B6" "EV" "AA" "B6" "B6" "B6" "B6" "B6" "EV" "EV" "B6" "B6" "B6"
-    ## [827] "EV" "B6" "B6" "B6" "EV" "EV" "B6" "B6" "EV" "B6" "B6" "B6" "EV" "AA"
-    ## [841] "AA" "B6" "B6" "B6" "US" "UA" "AA" "UA" "B6" "B6" "B6" "B6" "AA" "B6"
-    ## [855] "DL" "EV" "DL" "DL" "FL" "UA" "UA" "UA" "EV" "EV" "9E" "B6" "WN" "MQ"
-    ## [869] "UA" "US" "AA" "UA" "UA" "DL" "DL" "AA" "B6" "EV" "DL" "WN" "B6" "B6"
-    ## [883] "UA" "US" "AA" "MQ" "MQ" "MQ" "UA" "UA" "US" "DL" "WN" "EV" "EV" "US"
-    ## [897] "B6" "DL" "WN" "EV" "UA" "AA" "UA" "UA" "EV" "US" "UA" "B6" "UA" "EV"
-    ## [911] "AA" "B6" "B6" "US" "UA" "UA" "US" "DL" "UA" "DL" "UA" "AA" "B6" "DL"
-    ## [925] "DL" "DL" "B6" "MQ" "US" "VX" "EV" "AA" "AA" "DL" "UA" "B6" "DL" "UA"
-    ## [939] "AA" "MQ" "AA" "B6" "DL" "UA" "AA" "B6" "UA" "UA" "MQ" "AS" "UA" "VX"
-    ## [953] "UA" "UA" "FL" "B6" "DL" "B6" "AA" "B6" "UA" "B6" "B6" "WN" "UA" "B6"
-    ## [967] "AA" "AA" "UA" "WN" "EV" "UA" "9E" "DL" "AA" "UA" "B6" "UA" "9E" "EV"
-    ## [981] "EV" "UA" "EV" "DL" "B6" "B6" "DL" "DL" "US" "AA" "B6" "DL" "AA" "MQ"
-    ## [995] "UA" "AA" "DL" "DL" "US"
-    ##  [ reached getOption("max.print") -- omitted 335777 entries ]
+    ##  [1] "UA" "UA" "AA" "B6" "DL" "UA" "B6" "EV" "B6" "AA" "B6" "B6" "UA" "UA"
+    ## [15] "AA" "B6" "UA" "B6" "MQ" "B6"
+    ##  [ reached getOption("max.print") -- omitted 336756 entries ]
 
 We can combine this with `sort` (lexicographic sorting) and `unique` (deduplication) to see unique observations:
 
@@ -794,3 +729,526 @@ anti_join(airlines_sa, flights, by = "carrier")
     ##   carrier name              
     ##   <chr>   <chr>             
     ## 1 SA      Sant'Anna Airlines
+
+Variable types
+--------------
+
+`glimpse` shows all variable names and `<types>`, including:
+
+-   `<int>` **integer**: *signed* (positive or negative) integer
+-   `<dbl>` **double**: "double-precision" real number
+-   `<chr>` **character**: character string
+-   `<fct>` **factor**: categorical variable
+-   `<dttm>` **date-time**
+
+``` r
+flights %>% glimpse()
+```
+
+    ## Observations: 336,776
+    ## Variables: 19
+    ## $ year           <int> 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013,...
+    ## $ month          <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...
+    ## $ day            <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...
+    ## $ dep_time       <int> 517, 533, 542, 544, 554, 554, 555, 557, 557, 55...
+    ## $ sched_dep_time <int> 515, 529, 540, 545, 600, 558, 600, 600, 600, 60...
+    ## $ dep_delay      <dbl> 2, 4, 2, -1, -6, -4, -5, -3, -3, -2, -2, -2, -2...
+    ## $ arr_time       <int> 830, 850, 923, 1004, 812, 740, 913, 709, 838, 7...
+    ## $ sched_arr_time <int> 819, 830, 850, 1022, 837, 728, 854, 723, 846, 7...
+    ## $ arr_delay      <dbl> 11, 20, 33, -18, -25, 12, 19, -14, -8, 8, -2, -...
+    ## $ carrier        <chr> "UA", "UA", "AA", "B6", "DL", "UA", "B6", "EV",...
+    ## $ flight         <int> 1545, 1714, 1141, 725, 461, 1696, 507, 5708, 79...
+    ## $ tailnum        <chr> "N14228", "N24211", "N619AA", "N804JB", "N668DN...
+    ## $ origin         <chr> "EWR", "LGA", "JFK", "JFK", "LGA", "EWR", "EWR"...
+    ## $ dest           <chr> "IAH", "IAH", "MIA", "BQN", "ATL", "ORD", "FLL"...
+    ## $ air_time       <dbl> 227, 227, 160, 183, 116, 150, 158, 53, 140, 138...
+    ## $ distance       <dbl> 1400, 1416, 1089, 1576, 762, 719, 1065, 229, 94...
+    ## $ hour           <dbl> 5, 5, 5, 5, 6, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5,...
+    ## $ minute         <dbl> 15, 29, 40, 45, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, ...
+    ## $ time_hour      <dttm> 2013-01-01 05:00:00, 2013-01-01 05:00:00, 2013...
+
+Inspect variable types with typeof:
+
+``` r
+flights %>% pull(dep_time) %>% typeof()
+```
+
+    ## [1] "integer"
+
+``` r
+flights %>% pull(dep_delay) %>% typeof()
+```
+
+    ## [1] "double"
+
+``` r
+flights %>% pull(carrier) %>% typeof()
+```
+
+    ## [1] "character"
+
+``` r
+flights %>% pull(time_hour) %>% typeof()
+```
+
+    ## [1] "double"
+
+What are object types are there in R?
+
+``` r
+# Numbers are doubles by default…
+typeof(1.0)
+```
+
+    ## [1] "double"
+
+``` r
+typeof(1)
+```
+
+    ## [1] "double"
+
+``` r
+# …unless specified as integers with `L` or coerced
+typeof(1L)
+```
+
+    ## [1] "integer"
+
+``` r
+as.integer(1) %>% typeof()
+```
+
+    ## [1] "integer"
+
+``` r
+# strings:
+typeof("a")
+```
+
+    ## [1] "character"
+
+*atomic vector* and *list* classes
+----------------------------------
+
+The main type of *R* objects are *vectors*, either:
+
+1.  **lists**: (heterogeneous) contain elements of different type;
+2.  **atomic vectors**: contain elements of same type:
+    1.  *numeric*: *integer* or *double*
+    2.  *character*
+    3.  *logical*
+    4.  *complex*
+    5.  *raw*
+
+We can construct **atomic vectors** by *concatenating* `,`-sepatated elements with `c( )`
+
+Atomic vectors:
+
+``` r
+# numeric double
+typeof(c(1, 2, 3))
+```
+
+    ## [1] "double"
+
+``` r
+# numeric integer
+typeof(c(1L, 2L, 3L))
+```
+
+    ## [1] "integer"
+
+``` r
+# …character…
+typeof(c("a","b"))
+```
+
+    ## [1] "character"
+
+``` r
+typeof(c("1","2"))
+```
+
+    ## [1] "character"
+
+``` r
+# …logical…
+typeof(c(TRUE,FALSE))
+```
+
+    ## [1] "logical"
+
+``` r
+typeof(NA)
+```
+
+    ## [1] "logical"
+
+``` r
+typeof(c(1,2) == 1 )
+```
+
+    ## [1] "logical"
+
+We can initialise empty **lists** of lenght *n* with `vector("list", n)` and assign elements by positions
+
+``` r
+ex_list <- vector("list", 4) # initialise list
+
+ex_list # empty list
+```
+
+    ## [[1]]
+    ## NULL
+    ## 
+    ## [[2]]
+    ## NULL
+    ## 
+    ## [[3]]
+    ## NULL
+    ## 
+    ## [[4]]
+    ## NULL
+
+``` r
+# assign elements to list by position:
+ex_list[[1]] <- 10L # a lonely integer in the 1st slot
+ex_list[[2]] <- c("a", "b") # an atomic character vector in 2nd slot
+ex_list[[3]] <- c(1.1, 2.2) # an atomic double vector in 3rd slot
+ex_list[[4]] <- c(NA, TRUE, FALSE) # an atomic logical vector in 3rd slot
+
+ex_list # populated list
+```
+
+    ## [[1]]
+    ## [1] 10
+    ## 
+    ## [[2]]
+    ## [1] "a" "b"
+    ## 
+    ## [[3]]
+    ## [1] 1.1 2.2
+    ## 
+    ## [[4]]
+    ## [1]    NA  TRUE FALSE
+
+Factors
+-------
+
+`factor` variables are convenient to work with categorical values. We can transform (typically `character`) objects with `factor`
+
+``` r
+flights %>%
+  pull(carrier) %>%
+  head(n = 10) # show only first 10 elements
+```
+
+    ##  [1] "UA" "UA" "AA" "B6" "DL" "UA" "B6" "EV" "B6" "AA"
+
+``` r
+carriers <- flights %>% pull(carrier) %>% factor()
+
+levels(carriers)
+```
+
+    ##  [1] "9E" "AA" "AS" "B6" "DL" "EV" "F9" "FL" "HA" "MQ" "OO" "UA" "US" "VX"
+    ## [15] "WN" "YV"
+
+``` r
+flights %>% pull(carrier) %>% sort() %>% unique()
+```
+
+    ##  [1] "9E" "AA" "AS" "B6" "DL" "EV" "F9" "FL" "HA" "MQ" "OO" "UA" "US" "VX"
+    ## [15] "WN" "YV"
+
+``` r
+typeof(carriers) # factors are stored as type integer
+```
+
+    ## [1] "integer"
+
+We can manually set factor levels:
+
+``` r
+c("a", "b") %>% factor(levels = c("a", "b"))           # levels all observed in the vector
+```
+
+    ## [1] a b
+    ## Levels: a b
+
+``` r
+c("a", "b") %>% factor(levels = c("a", "b", "c"))      # as before, and one more level
+```
+
+    ## [1] a b
+    ## Levels: a b c
+
+``` r
+c("a", "b", "z") %>% factor(levels = c("a", "b", "c")) # levels in data are different
+```
+
+    ## [1] a    b    <NA>
+    ## Levels: a b c
+
+Assign meaningful labels to factor levels. By default, levels are *unique, sorted* values, unless we provide a custom order
+
+``` r
+c("a", "b") %>% factor() # by default, levels and labels are unique sorted values
+```
+
+    ## [1] a b
+    ## Levels: a b
+
+``` r
+c("a", "b") %>% factor(levels = c("b", "a")) # custom level order
+```
+
+    ## [1] a b
+    ## Levels: b a
+
+We can change how levels are labelled by setting `labels` (in the same order as `levels`):
+
+``` r
+c("a", "b") %>% factor(labels = c("alpha", "beta")) # "a" = "alpha" and "b" = "beta"
+```
+
+    ## [1] alpha beta 
+    ## Levels: alpha beta
+
+``` r
+c("a", "b") %>% factor(labels = c("beta", "alpha")) # mind the order! "a" = "beta" and "b" = "alpha"
+```
+
+    ## [1] beta  alpha
+    ## Levels: beta alpha
+
+``` r
+# better carefully set both levels and labels:
+c("a", "b") %>% factor(levels = c("b", "a"), labels = c("beta", "alpha")) 
+```
+
+    ## [1] alpha beta 
+    ## Levels: beta alpha
+
+Example: work within `flights` tibble to change `carrier` to factor:
+
+``` r
+flights %>%
+  mutate(carrier = factor(carrier)) %>%
+  select(year:day, carrier)
+```
+
+    ## # A tibble: 336,776 x 4
+    ##     year month   day carrier
+    ##    <int> <int> <int> <fct>  
+    ##  1  2013     1     1 UA     
+    ##  2  2013     1     1 UA     
+    ##  3  2013     1     1 AA     
+    ##  4  2013     1     1 B6     
+    ##  5  2013     1     1 DL     
+    ##  6  2013     1     1 UA     
+    ##  7  2013     1     1 B6     
+    ##  8  2013     1     1 EV     
+    ##  9  2013     1     1 B6     
+    ## 10  2013     1     1 AA     
+    ## # ... with 336,766 more rows
+
+since airlines uniquely maps carrier codes in airline names, we can use that to set factor levels
+
+``` r
+flights %>%
+  mutate(
+    carrier = factor(
+      carrier,
+      levels = airlines %>% pull(carrier), 
+      labels = airlines %>% pull(name)
+    )
+  ) %>% 
+  select(year:day, carrier)
+```
+
+    ## # A tibble: 336,776 x 4
+    ##     year month   day carrier                 
+    ##    <int> <int> <int> <fct>                   
+    ##  1  2013     1     1 United Air Lines Inc.   
+    ##  2  2013     1     1 United Air Lines Inc.   
+    ##  3  2013     1     1 American Airlines Inc.  
+    ##  4  2013     1     1 JetBlue Airways         
+    ##  5  2013     1     1 Delta Air Lines Inc.    
+    ##  6  2013     1     1 United Air Lines Inc.   
+    ##  7  2013     1     1 JetBlue Airways         
+    ##  8  2013     1     1 ExpressJet Airlines Inc.
+    ##  9  2013     1     1 JetBlue Airways         
+    ## 10  2013     1     1 American Airlines Inc.  
+    ## # ... with 336,766 more rows
+
+in shorhand, using `$` to select a variable in a tibble
+
+``` r
+flights %>%
+  mutate(carrier = factor(carrier, levels = airlines$carrier, labels = airlines$name)) %>% 
+  select(year:day, carrier)
+```
+
+    ## # A tibble: 336,776 x 4
+    ##     year month   day carrier                 
+    ##    <int> <int> <int> <fct>                   
+    ##  1  2013     1     1 United Air Lines Inc.   
+    ##  2  2013     1     1 United Air Lines Inc.   
+    ##  3  2013     1     1 American Airlines Inc.  
+    ##  4  2013     1     1 JetBlue Airways         
+    ##  5  2013     1     1 Delta Air Lines Inc.    
+    ##  6  2013     1     1 United Air Lines Inc.   
+    ##  7  2013     1     1 JetBlue Airways         
+    ##  8  2013     1     1 ExpressJet Airlines Inc.
+    ##  9  2013     1     1 JetBlue Airways         
+    ## 10  2013     1     1 American Airlines Inc.  
+    ## # ... with 336,766 more rows
+
+Date and time variables
+-----------------------
+
+Dates are generally difficult! `lubridate` package (in `tidyverse`, but not loaded automatically) makes it easier:
+
+The functions `ymd()` `dmy()` etc., allow to parse strings containing "Year, Month, Date" values (in a given order)
+
+``` r
+library(lubridate) # installed with tidyverse, but not loaded by default
+```
+
+    ## 
+    ## Attaching package: 'lubridate'
+
+    ## The following object is masked from 'package:base':
+    ## 
+    ##     date
+
+``` r
+ymd("2018-05-17") # parse date Y-M-D
+```
+
+    ## [1] "2018-05-17"
+
+``` r
+dmy("15/05/2018") # input date in different order…
+```
+
+    ## [1] "2018-05-15"
+
+``` r
+mdy("05.15.2018") # …and with different separators
+```
+
+    ## [1] "2018-05-15"
+
+``` r
+mdy("05.15.2018") == dmy("15/05/2018") # they are parsed to identical representations
+```
+
+    ## [1] TRUE
+
+``` r
+mdy("May 17th 2018")  # Can parse natural language
+```
+
+    ## [1] "2018-05-17"
+
+``` r
+dmy("17 Maggio 2018") # also in non-English other locales!
+```
+
+    ## [1] "2018-05-17"
+
+``` r
+# Parse heterogeneous formats (still Y-M-D), but written differently
+c(20090101, "2009-01-02", "2009 01 03", "2009-1-4",
+  "2009-1, 5", "Created on 2009 1 6", "200901 !!! 07") %>% ymd()
+```
+
+    ## [1] "2009-01-01" "2009-01-02" "2009-01-03" "2009-01-04" "2009-01-05"
+    ## [6] "2009-01-06" "2009-01-07"
+
+Operations with dates:
+
+``` r
+typeof(ymd("2018-05-17")) # actually a double number previewed in human-redable format
+```
+
+    ## [1] "double"
+
+``` r
+dmy("16/05/2018") > dmy("15/05/2018") # > means "after"
+```
+
+    ## [1] TRUE
+
+Construct dates from separate columns:
+
+``` r
+flights %>% select(year, month, day) # separate year, month, day (integer) variables
+```
+
+    ## # A tibble: 336,776 x 3
+    ##     year month   day
+    ##    <int> <int> <int>
+    ##  1  2013     1     1
+    ##  2  2013     1     1
+    ##  3  2013     1     1
+    ##  4  2013     1     1
+    ##  5  2013     1     1
+    ##  6  2013     1     1
+    ##  7  2013     1     1
+    ##  8  2013     1     1
+    ##  9  2013     1     1
+    ## 10  2013     1     1
+    ## # ... with 336,766 more rows
+
+``` r
+flights %>% select(year, month, day) %>%
+  unite(date, year, month, day, sep = "-") # paste variables together as (dash-separated) character
+```
+
+    ## # A tibble: 336,776 x 1
+    ##    date    
+    ##    <chr>   
+    ##  1 2013-1-1
+    ##  2 2013-1-1
+    ##  3 2013-1-1
+    ##  4 2013-1-1
+    ##  5 2013-1-1
+    ##  6 2013-1-1
+    ##  7 2013-1-1
+    ##  8 2013-1-1
+    ##  9 2013-1-1
+    ## 10 2013-1-1
+    ## # ... with 336,766 more rows
+
+``` r
+flights %>% select(year, month, day) %>%
+  unite(date, year, month, day, sep = "-") %>% 
+  mutate(date = ymd(date))
+```
+
+    ## # A tibble: 336,776 x 1
+    ##    date      
+    ##    <date>    
+    ##  1 2013-01-01
+    ##  2 2013-01-01
+    ##  3 2013-01-01
+    ##  4 2013-01-01
+    ##  5 2013-01-01
+    ##  6 2013-01-01
+    ##  7 2013-01-01
+    ##  8 2013-01-01
+    ##  9 2013-01-01
+    ## 10 2013-01-01
+    ## # ... with 336,766 more rows
+
+What's in a date? Obviously *day*, *month*, *year*. But also time zone!
+
+``` r
+dmy("16/05-2018")
+```
+
+    ## [1] "2018-05-16"

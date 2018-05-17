@@ -6,6 +6,7 @@ editor_options:
   chunk_output_type: console
 ---
 
+
 ## Install required packages
 
 We need `tidyverse` and related dependencies, and example data provided by`nycflights13`.
@@ -95,7 +96,7 @@ flights %>% select(year:day)
 ```
 
 `pull()` returns a single column as a vector or values 
-```{r}
+```{r, R.options=list(max.print=20)}
 flights %>% pull(carrier)
 ```
 
@@ -327,8 +328,6 @@ The main type of *R* objects are *vectors*, either:
     4. *complex*
     5. *raw*
     
-<!-- the `NULL` type (distinct from `NA`)  -->
-    
 We can construct __atomic vectors__ by *concatenating* `,`-sepatated elements with `c( )` 
 
 Atomic vectors:
@@ -437,4 +436,48 @@ flights %>%
   select(year:day, carrier)
 ```
 
+
+## Date and time variables
+
+Dates are generally difficult! `lubridate` package (in `tidyverse`, but not loaded automatically) makes it easier:
+
+The functions `ymd()` `dmy()` etc., allow to parse strings containing "Year, Month, Date" values (in a given order)
+
+```{r}
+library(lubridate) # installed with tidyverse, but not loaded by default
+
+ymd("2018-05-17") # parse date Y-M-D
+
+dmy("15/05/2018") # input date in different order…
+mdy("05.15.2018") # …and with different separators
+
+mdy("05.15.2018") == dmy("15/05/2018") # they are parsed to identical representations
+
+mdy("May 17th 2018")  # Can parse natural language
+dmy("17 Maggio 2018") # also in non-English other locales!
+
+# Parse heterogeneous formats (still Y-M-D), but written differently
+c(20090101, "2009-01-02", "2009 01 03", "2009-1-4",
+  "2009-1, 5", "Created on 2009 1 6", "200901 !!! 07") %>% ymd()
+```
+
+Operations with dates:
+```{r}
+typeof(ymd("2018-05-17")) # actually a double number previewed in human-redable format
+
+dmy("16/05/2018") > dmy("15/05/2018") # > means "after"
+```
+
+
+Construct dates from separate columns:
+```{r}
+flights %>% select(year, month, day) # separate year, month, day (integer) variables
+
+flights %>% select(year, month, day) %>%
+  unite(date, year, month, day, sep = "-") # paste variables together as (dash-separated) character
+
+flights %>% select(year, month, day) %>%
+  unite(date, year, month, day, sep = "-") %>% 
+  mutate(date = ymd(date))
+```
 
