@@ -828,8 +828,8 @@ typeof("a")
 
     ## [1] "character"
 
-*atomic vector* and *list* classes
-----------------------------------
+Vectors: *atomic vector* and *list* classes
+-------------------------------------------
 
 The main type of *R* objects are *vectors*, either:
 
@@ -1183,7 +1183,105 @@ dmy("16/05/2018") > dmy("15/05/2018") # > means "after"
 
     ## [1] TRUE
 
-Construct dates from separate columns:
+``` r
+today() # current date
+```
+
+    ## [1] "2018-05-17"
+
+``` r
+# extract components:
+today() %>% day()
+```
+
+    ## [1] 17
+
+``` r
+today() %>% month()
+```
+
+    ## [1] 5
+
+``` r
+today() %>% quarter()
+```
+
+    ## [1] 2
+
+``` r
+# also week day (as integer or factor in system locale)
+today() %>% wday()
+```
+
+    ## [1] 5
+
+``` r
+today() %>% wday(label = TRUE)
+```
+
+    ## [1] gio
+    ## Levels: dom < lun < mar < mer < gio < ven < sab
+
+``` r
+today() %>% leap_year() # is it a leap year?
+```
+
+    ## [1] FALSE
+
+``` r
+today() %>% dst() # is it Daylight Savings Time?
+```
+
+    ## [1] FALSE
+
+### Date arithmetic
+
+Date arithmetic is hard! Lots of conventions and unspoken assumptions. What does "a month from now" mean exactly?
+
+``` r
+today() + days(1)   # one day from now
+```
+
+    ## [1] "2018-05-18"
+
+``` r
+today() + months(1) # one month from now
+```
+
+    ## [1] "2018-06-17"
+
+``` r
+# Round dates:
+today() %>% floor_date(unit = "month")   # round down to first day of month
+```
+
+    ## [1] "2018-05-01"
+
+``` r
+today() %>% ceiling_date(unit = "month") # round up to first day of next month
+```
+
+    ## [1] "2018-06-01"
+
+``` r
+today() %>% ceiling_date(unit = "month") - days(1) # round up to last day of this month
+```
+
+    ## [1] "2018-05-31"
+
+``` r
+today() %>% rollback()                  # round down to last day of previous month 
+```
+
+    ## [1] "2018-04-30"
+
+``` r
+today() %>% rollback(roll_to_first = T) # round down first day of same month
+```
+
+    ## [1] "2018-05-01"
+
+### Construct dates from separate columns:
 
 ``` r
 flights %>% select(year, month, day) # separate year, month, day (integer) variables
@@ -1245,10 +1343,12 @@ flights %>% select(year, month, day) %>%
     ## 10 2013-01-01
     ## # ... with 336,766 more rows
 
-What's in a date? Obviously *day*, *month*, *year*. But also time zone!
+What's in a date? Obviously *day*, *month*, *year*. But also time zone! (by default UTC)
 
 ``` r
-dmy("16/05-2018")
+dmy("16/05-2018", tz = "Europe/Rome") == dmy("16/05-2018", tz = "Europe/London") 
 ```
 
-    ## [1] "2018-05-16"
+    ## [1] FALSE
+
+### Higher- and lower- precision dates

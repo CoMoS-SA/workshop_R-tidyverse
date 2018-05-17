@@ -48,7 +48,7 @@ glimpse(flights)
 ```
 
 `View` shows the whole dataset in a dedicated tab of RStudio
-```{r}
+```{r, eval=FALSE}
 View(flights)
 ```
 
@@ -316,7 +316,7 @@ typeof("a")
 ```
 
 
-## *atomic vector* and *list* classes
+## Vectors: *atomic vector* and *list* classes
 
 The main type of *R* objects are *vectors*, either:
 
@@ -466,10 +466,41 @@ Operations with dates:
 typeof(ymd("2018-05-17")) # actually a double number previewed in human-redable format
 
 dmy("16/05/2018") > dmy("15/05/2018") # > means "after"
+
+today() # current date
+
+# extract components:
+today() %>% day()
+today() %>% month()
+today() %>% quarter()
+
+# also week day (as integer or factor in system locale)
+today() %>% wday()
+today() %>% wday(label = TRUE)
+
+today() %>% leap_year() # is it a leap year?
+today() %>% dst() # is it Daylight Savings Time?
 ```
 
 
-Construct dates from separate columns:
+### Date arithmetic
+
+Date arithmetic is hard! Lots of conventions and unspoken assumptions. What does "a month from now" mean exactly?
+
+```{r}
+today() + days(1)   # one day from now
+today() + months(1) # one month from now
+
+# Round dates:
+today() %>% floor_date(unit = "month")   # round down to first day of month
+today() %>% ceiling_date(unit = "month") # round up to first day of next month
+today() %>% ceiling_date(unit = "month") - days(1) # round up to last day of this month
+today() %>% rollback()                  # round down to last day of previous month 
+today() %>% rollback(roll_to_first = T) # round down first day of same month
+```
+
+
+### Construct dates from separate columns:
 ```{r}
 flights %>% select(year, month, day) # separate year, month, day (integer) variables
 
@@ -480,4 +511,13 @@ flights %>% select(year, month, day) %>%
   unite(date, year, month, day, sep = "-") %>% 
   mutate(date = ymd(date))
 ```
+
+
+What's in a date? Obviously *day*, *month*, *year*. But also time zone! (by default UTC)
+```{r}
+dmy("16/05-2018", tz = "Europe/Rome") == dmy("16/05-2018", tz = "Europe/London") 
+```
+
+### Higher- and lower- precision dates
+
 
