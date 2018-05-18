@@ -4,7 +4,7 @@ This repository contains the material for the PhD Workshop *R for Data Science i
 The workshop is intended mainly for first-year PhDs in Economics, but all members of the [*Computational Modellers Society*](https://www.santannapisa.it/it/istituto/economia/complexity-modellers-society-comos) are welcome to attend!
 
 ![Poster](https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg?cs=srgb&dl=coding-computer-data-577585.jpg&fm=jpg)
-<div style="text-align: right"> *Image credit: [Kevin Ku](https://www.pexels.com/@kevin-ku-92347)* </div>
+*Image credit: [Kevin Ku](https://www.pexels.com/@kevin-ku-92347)*
 
 The workshop covers topics on data science throughout a typical research project using the [*tidyverse*](https://www.tidyverse.org/). No prior knowledge of *R* is required! Hopefully even those of you familiar with “base R” (but not the tidyverse) will find something new.
 
