@@ -8,17 +8,19 @@ editor_options:
 
 ## Load the packages for this session
 `tidyverse` loads (eight) packages of the *tidyverse* and shows their version.
+ Also load `readxl` to read Excel files and `haven` for importing and exporting Stata, SAS and SPSS data.
 
 ```{r}
 library(tidyverse)
+library(readxl)
+library(haven)
 ```
+
 
 ## Data input and output
 
 Import a table with `read_csv` (NB, different than `read.csv`!). 
-
 `read_csv` parses variables by guessing the column types based on heuristics:
-
 ```{r}
 flights_import <- read_csv("./data/flights.csv")
 
@@ -46,10 +48,11 @@ challenge <- read_csv("./data/challenge.csv", col_types = list(x = col_double(),
 ```
 
 _pro-tip__: import problematic columns as character and inspect them:
-```{r}
-challenge <- read_csv("./data/challenge.csv", col_types = list(x = col_double(), y = col_character()))
+```{r, R.options=list(max.print=20)}
+challenge <- read_csv("./data/challenge.csv", col_types = list(x = col_character(), y = col_character()))
 
 challenge %>% pull(y) %>% sort() %>% unique()
+challenge %>% pull(x) %>% sort() %>% unique()
 ```
 
 `readr` tries to guess the type of object based on heuristics: 
@@ -59,8 +62,32 @@ guess_parser("1,234")
 guess_parser(c(".", "-"))
 guess_parser(c("10W", "20N"))
 guess_parser("10:30")
+guess_parser("15/06/2018")
+```
+
+Read a file from a URL
+```{r}
+flights_import <- read_csv("https://raw.githubusercontent.com/CoMoS-SA/workshop-R-tidyverse/master/data/flights.csv")
 ```
 
 
+## Importing Excel files with `readxl`
 
+We can import Excel workbooks with `read_excel`: it works with `.xlsx` and `.xls` files. 
+```{r}
+# Enumerate sheets in the workbook
+excel_sheets("./data/nycflights.xlsx")
+
+# Access a given sheet
+flights_xl  <- read_excel("./data/nycflights.xlsx", sheet = "Flights")
+airlines_xl <- read_excel("./data/nycflights.xlsx", sheet = "Airlines")
+```
+NB: the package `readxl` does not provide functions to *export* Excel workbooks, but the package `openxls` does.
+
+
+## Importing and exporting Stata `.dta` files using `haven`
+
+```{r}
+mtcars_stata <- read_dta("./data/mtcars.dta")
+```
 
