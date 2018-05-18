@@ -58,3 +58,5 @@ In no particular order:
 * [2-Data_types_lists_map.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/notebooks/2-Data_types_lists_map.md)
 * [3-Data_input_output.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/notebooks/3-Data_input_output.md)
 * [4-Tidy_modelling.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/notebooks/4-Tidy_modelling.md)
+
+See also the [course slides](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/Slides%20Data%20Science%20R.pdf).
