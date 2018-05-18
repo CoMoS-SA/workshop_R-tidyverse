@@ -22,13 +22,24 @@ If asked, **do not compile from source**.
 install.packages("broom")
 ```
 
+Load the packages for the session:
+```{r}
+# `tidyverse` loads the core packages of the *tidyverse* and shows their version.
+library(tidyverse)
+library(nycflights13)
+library(broom)
+```
+
+
+## Model evaluation and tidying
 
 ```{r}
+data(flights)
+
 flights %>%
-  arrange(year, month, day) %>%
   split(.$month) %>%
   set_names(month.name) %>%
   map(~ lm(dep_delay ~ dep_time + day, data = .)) %>%
-  map(~ summary(.)$r.squared)
+  map_dfr(~ tidy(.), .id = "chunk")
 ```
 

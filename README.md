@@ -1,11 +1,10 @@
 # Workshop: *R for Data Science in the tidyverse*
 
-This repository contains the material for the PhD Workshop *R for Data Science in the tidyverse* in Sant'Anna School of Advanced Studies (Pisa) on May 16-17-18, 2018.
+This repository contains the material for the PhD Workshop *R for Data Science in the tidyverse* by [Matteo Sostero](https://matteosostero.com) at [Sant'Anna School of Advanced Studies](https://www.santannapisa.it/it/istituto/economia/complexity-modellers-society-comos) (Pisa) in May 2018.
+The workshop is intended mainly for first-year PhDs in Economics, but all members of the [*Computational Modellers Society*](https://www.santannapisa.it/it/istituto/economia/complexity-modellers-society-comos) are welcome to attend!
 
 ![Poster](https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg?cs=srgb&dl=coding-computer-data-577585.jpg&fm=jpg)
 *Image credit: [Kevin Ku](https://www.pexels.com/@kevin-ku-92347)*
-
-The workshop is intended mainly for first-year PhDs in Economics, but all *CoMoS* modellers are welcome to attend!
 
 The workshop covers topics on data science throughout a typical research project using the [*tidyverse*](https://www.tidyverse.org/). No prior knowledge of *R* is required! Hopefully even those of you familiar with “base R” (but not the tidyverse) will find something new.
 
@@ -13,20 +12,11 @@ The material is based on [*R for Data Science*](http://r4ds.had.co.nz/index.html
 See also their book [*R for Data Science: Import, Tidy, Transform, Visualize, and Model Data*](https://www.amazon.it/dp/1491910399) published by O'Reilly Media, 2017.
 
 
-## Schedule
-
-Date                 | Time        | Room              | Notebook 
---                   | --          | --                | --   
-Wednesday 16/06/2018 | 10:30–12:30 | Aula 3 Toscanelli | [1_data_transformation.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/1_data_transformation.md) 
-Thursday 17/06/2018  | 10:30–12:30 | Aula 3 Toscanelli | [2_data_input_output.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/2_data_input_output.md) 
-Friday 18/06/2018    | 10:30–12:30 | Aula 3 Toscanelli |      
-
-
 ## Important Preparation
 
-* Please bring your __laptop__ and __charger__;
-* Install an __up-to-date__ version of [R](https://cran.r-project.org/);
-* Install an __up-to-date__ version of [RStudio](https://www.rstudio.com/products/rstudio/download/#download);
+* Please bring your **laptop** and **charger**;
+* Install an **up-to-date** version of [R](https://cran.r-project.org/);
+* Install an **up-to-date** version of [RStudio](https://www.rstudio.com/products/rstudio/download/#download);
 * (Windows only) install [Rtools](https://cran.r-project.org/bin/windows/Rtools/);
 * Install [git](https://git-scm.com/download/) on your system;
 * Get a copy of the material:
@@ -40,10 +30,31 @@ install.packages("nycflights13")
 ```
 
 
-## Tentative outline:
+## Schedule
 
-* __Data input in R__: importing data from “messy” files, reading common and exotic formats and directory structures; preserving metadata; web scraping.
-* __Data wrangling in R__: “tidying” strategies for fixing common issues with data; text processing with regular expressions; reshaping (wide-long) tabular data; merging and appending data.
-* __Visualization__: plot data with *ggplot2*; principles and recipes for visualization.
-* __Automation__: using the pipe `%>%`;  automate tasks with functional programming with *purrr*.
-* __Statistical modeling__: automated approaches to estimation and model selection.
+Date                 | Time        | Room              
+--                   | --          | --                
+Wednesday 16/05/2018 | 10:30–12:30 | Aula 3 Toscanelli 
+Thursday 17/05/2018  | 10:30–12:30 | Aula 3 Toscanelli 
+Friday 18/05/2018    | 10:30–12:30 | Aula 3 Toscanelli 
+
+By popular demand, more sessions will be scheduled in the next few weeks.
+
+
+## Outline:
+
+In no particular order:
+
+* **Data input in R**: importing data from “messy” files, reading common and exotic formats and directory structures; preserving metadata; web scraping.
+* **Data wrangling in R**: “tidying” strategies for fixing common issues with data; text processing with regular expressions; reshaping (wide-long) tabular data; merging and appending data.
+* **Automation**: using the pipe `%>%`;  automate tasks with functional programming with *purrr*.
+* **Statistical modeling**: automated approaches to estimation and model selection.
+* **Visualization**: plot data with *ggplot2*; principles and recipes for visualization.
+
+
+## Session notebooks:
+
+* [1-Data_transformation.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/notebooks/1-Data_transformation.md)
+* [2-Data_types_lists_map.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/notebooks/2-Data_types_lists_map.md)
+* [3-Data_input_output.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/notebooks/3-Data_input_output.md)
+* [4-Tidy_modelling.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/notebooks/4-Tidy_modelling.md)

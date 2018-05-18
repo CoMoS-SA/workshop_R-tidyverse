@@ -2,7 +2,7 @@
 title: "Data transformation"
 author: "Matteo Sostero"
 output: github_document
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
