@@ -6,6 +6,12 @@ editor_options:
   chunk_output_type: console
 ---
 
+**Packages needed for this session**:
+
+* `tidyverse`
+* `lubridate` (installed with tidyverse)
+* `nycflights13`
+
 
 ## Install required packages
 
@@ -14,7 +20,8 @@ We need `tidyverse` and related dependencies, and example data provided by`nycfl
 `CTRL/CMD + ENTER` to run the block of code below:
 
 ```{r eval=FALSE, message=FALSE, include=FALSE}
-install.packages(c("tidyverse", "nycflights13"))
+install.packages("tidyverse")
+install.packages("nycflights13")
 ```
 
 

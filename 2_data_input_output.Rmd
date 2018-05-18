@@ -6,6 +6,17 @@ editor_options:
   chunk_output_type: console
 ---
 
+**Packages needed for this session**:
+
+* `tidyverse`
+* `readxl` (installed with tidyverse)
+* `haven` (installed with tidyverse)
+* `naniar` **new!**
+
+```{r, eval=FALSE, message=FALSE, include=FALSE}
+install.packages("naniar")
+```
+
 ## Load the packages for this session
 `tidyverse` loads (eight) packages of the *tidyverse* and shows their version.
  Also load `readxl` to read Excel files and `haven` for importing and exporting Stata, SAS and SPSS data.
@@ -14,11 +25,11 @@ editor_options:
 library(tidyverse)
 library(readxl)
 library(haven)
+library(naniar)
 ```
 
 
 ## Data input and output
-
 Import a table with `read_csv` (NB, different than `read.csv`!). 
 `read_csv` parses variables by guessing the column types based on heuristics:
 ```{r}
@@ -27,7 +38,20 @@ flights_import <- read_csv("./data/flights.csv")
 glimpse(flights_import)
 ```
 
-Let's try with a tricky file
+inspect the data using `miss_var_summary` from `naniar` to see how many are missing:
+```{r}
+flights_import %>% miss_var_summary()
+
+# which variables have missing values?
+#QUIZ
+
+# plot of missing values by variables
+flights_import %>% gg_miss_var()
+```
+
+## Solving parsing failures
+
+Let's try with a (pathologically) tricky file
 ```{r}
 challenge <- read_csv("./data/challenge.csv")
 ```
@@ -35,6 +59,11 @@ challenge <- read_csv("./data/challenge.csv")
 what's wrong? let's inspect:
 ```{r}
 problems(challenge)
+```
+
+open the raw `csv` file to see what's happening (hint: line 1001):
+```{r eval=FALSE, message=FALSE, include=FALSE}
+rstudioapi::navigateToFile("data/challenge.csv", line = 1001)
 ```
 
 we help `read_csv` parser by scanning more rows before guessing type:
@@ -65,14 +94,16 @@ guess_parser("10:30")
 guess_parser("15/06/2018")
 ```
 
-Read a file from a URL
+
+## Import from internet
+
+Read a file from a URL:
 ```{r}
 flights_import <- read_csv("https://raw.githubusercontent.com/CoMoS-SA/workshop-R-tidyverse/master/data/flights.csv")
 ```
 
 
 ## Importing Excel files with `readxl`
-
 We can import Excel workbooks with `read_excel`: it works with `.xlsx` and `.xls` files. 
 ```{r}
 # Enumerate sheets in the workbook
@@ -86,8 +117,32 @@ NB: the package `readxl` does not provide functions to *export* Excel workbooks,
 
 
 ## Importing and exporting Stata `.dta` files using `haven`
+```{r}
+# read .dta file. 
+# Default text encoding in Stata >= 14 is utf-8, but before also be "windows-1252"
+
+mtcars_stata <- read_dta("./data/mtcars.dta")
+mtcars_stata <- read_dta("./data/mtcars.dta", encoding = "UTF-8")
+
+write_dta(mtcars_stata, "./data/mtcars.dta", version = 13)
+```
+
+
+## Saving data in R
+The best format for saving R objects for later use is `.rds`
 
 ```{r}
-mtcars_stata <- read_dta("./data/mtcars.dta")
+write_rds(mtcars_stata, "./data/mtcars.rds")
+mtcars_stata <- read_rds("./data/mtcars.rds")
+```
+
+## Reading and merging all files in a directory
+
+Sometimes data is fractioned in disparate files, differing only by the value of a variable.
+In the `./data/scattered/` directory, I fractioned the `flights` data by month.
+
+Enumerate files in that directory:
+```{r}
+list.files("./data/")
 ```
 
