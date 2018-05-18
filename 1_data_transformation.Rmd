@@ -8,9 +8,12 @@ editor_options:
 
 **Packages needed for this session**:
 
-* `tidyverse`
-* `lubridate` (installed with tidyverse)
-* `nycflights13`
+|    package    |             purpose              |        installation        |
+| ------------- | -------------------------------- | -------------------------- |
+| `tidyverse`   | everything                       | CRAN                       |
+| `nycflight13` | example datasets                 | CRAN                       |
+| `lubridate`   | working with dates               | installed with `tidyverse` |
+| `glue`        | pasting and interpreting strings | installed with `tidyverse` |
 
 
 ## Install required packages
@@ -26,18 +29,22 @@ install.packages("nycflights13")
 
 
 ## Load the packages for this session
+
 `tidyverse` loads (eight) packages of the *tidyverse* and shows their version.
-The *nycflights13* package contains different example datasets, including *flights*
+The `nycflights13` package contains different example datasets, including *flights*
 
 ```{r}
 library(tidyverse)
 library(nycflights13)
+library(lubridate)
 ```
+
+`CTRL/CMD + L` clears the console.
 
 
 ## Load example data
 
-load the `flights` dataset from `nycflights13`
+load the `flights` dataset from `nycflights13`:
 ```{r}
 data(flights)
 ```
@@ -100,6 +107,7 @@ flights %>% select(contains("dep"), starts_with("sched"))
 or select intervals based on position (careful!)
 ```{r}
 flights %>% select(year:day)
+flights %>% select(1:4)
 ```
 
 `pull()` returns a single column as a vector or values 
@@ -118,7 +126,6 @@ flights %>% pull(carrier) %>% sort() %>% unique()
 We can compute one or more variable summaries for the whole dataset (column-wise) using `summarise`.
 
 `mean(., na.rm = TRUE)` computes the average value, excluding missing values.
-
 ```{r}
 flights %>% 
   summarise(
@@ -319,7 +326,6 @@ as.integer(1) %>% typeof()
 
 # strings:
 typeof("a")
-
 ```
 
 
@@ -356,9 +362,7 @@ typeof(c(1,2) == 1 )
 
 ```
 
-
 We can initialise empty __lists__ of lenght *n* with `vector("list", n)` and assign elements by positions
-
 ```{r}
 ex_list <- vector("list", 4) # initialise list
 
@@ -371,6 +375,70 @@ ex_list[[3]] <- c(1.1, 2.2) # an atomic double vector in 3rd slot
 ex_list[[4]] <- c(NA, TRUE, FALSE) # an atomic logical vector in 3rd slot
 
 ex_list # populated list
+```
+
+
+## Applying functions to vector (list) elements with `map`
+
+`map(.x, .f)` applies a function `.f` to every element of a list or atomic vector `.x`
+Functions can be:
+
+* already defined in R: `sum`, `mean`, `filter`, `mutate`, ecc.
+* defined in place as “anonymous functions” `.f` with the syntax `~ .`, where `~` introduces a function and `.` is the argument
+```{r}
+# a list of three elements: 2, 4, and 6
+list(2, 4, 6) 
+# every list element is actually a lenght-1 atomic vector
+
+# we map the list elements .x to a function .f = ~ .^2
+# the function is introduced by ~ and takes the argument . and raises ^ to the power of 2
+map(.x = list(2, 4, 6), .f = ~ .^2)
+
+# equivalent to piping the list as first argument of map(.) 
+# and omit the argument names .x and .f
+list(2, 4, 6) %>% map(.f = ~ .^2)
+
+```
+
+we can map lists containing atomic vectors of different lenghts:
+```{r}
+# A list of three elements, containing numeric vectors of different lenghts
+list(c(1,2), c(3,4,5,6), c(7,8,9)) 
+
+# we map functions that allow vector arguments, and returns a single element
+list(c(1,2), c(3,4,5,6), c(7,8,9)) %>% map(~ sum(.))
+list(c(1,2), c(3,4,5,6), c(7,8,9)) %>% map(~ mean(.))
+```
+
+we can map functions to list of string vectors as well.
+For instance, `collapse` takes a vector of character and pastes them together
+```{r}
+list(c("a", "b", "c"), c("hello", "bye"))
+list(c("a", "b", "c"), c("hello", "bye")) %>% map(~ collapse(.))
+```
+
+`tibble` and `data.frame` objects are also `list`! Hence, we can `map` them:
+
+```{r, R.options=list(max.print=20)}
+is.list(flights) # the tibble is also a list
+length(flights) # a list of 19 elements (the variables, or columns)
+
+# let's take the first elements of the “list” flights:
+flights[[1]] 
+# it's a numeric vector, with as many elements as observations (rows) of flights
+```
+ 
+We can `map` the variables that make up `flights`
+```{r}
+flights %>% map(~ typeof(.)) # what is the type of each variable
+
+flights %>% map(~ is.integer(.))
+
+flights %>% map(~ length(.))
+
+flights %>% map(~ sum(is.na(.)))
+
+flights %>% map_dfr(~ sum(is.na(.)))
 ```
 
 
@@ -550,10 +618,9 @@ Both have variants for lower-resolution input:
 # parse date and time to resolution of minutes
 dmy_hm("17-05-2018 8-22")
 # parse date and time to precision of hours
-dmy_h("17-05-2018 8")
+dmy_h("17-05-2018 08")
 
 # time at diffrent resolution
 hm("12.31") # with different separators
 ms("2.05") # with different separators
 ```
-
