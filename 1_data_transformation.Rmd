@@ -518,6 +518,35 @@ What's in a date? Obviously *day*, *month*, *year*. But also time zone! (by defa
 dmy("16/05-2018", tz = "Europe/Rome") == dmy("16/05-2018", tz = "Europe/London") 
 ```
 
-### Higher- and lower- precision dates
 
+### Higher- and lower- resolution dates and time
+
+`dmy_hms` (and obvious permutations) parse date and times to seconds:
+```{r}
+# Using different representations:
+dmy_hms("17/05/2018T8:22,30") 
+dmy_hms("17/05/2018T8:22.30")
+dmy_hms("17-05-2018 8:22:30") 
+dmy_hms("17-05-2018 8-22-3") 
+dmy_hms("17-05-2018 8-22-3")
+```
+
+`hms` parses time-of-day values:
+```{r}
+# Using different representations:
+hms("12:30:00")
+hms("12.31.00")
+```
+
+Both have variants for lower-resolution input:
+```{r}
+# parse date and time to resolution of minutes
+dmy_hm("17-05-2018 8-22")
+# parse date and time to precision of hours
+dmy_h("17-05-2018 8")
+
+# time at diffrent resolution
+hm("12.31") # with different separators
+ms("2.05") # with different separators
+```
 

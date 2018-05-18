@@ -1187,14 +1187,14 @@ dmy("16/05/2018") > dmy("15/05/2018") # > means "after"
 today() # current date
 ```
 
-    ## [1] "2018-05-17"
+    ## [1] "2018-05-18"
 
 ``` r
 # extract components:
 today() %>% day()
 ```
 
-    ## [1] 17
+    ## [1] 18
 
 ``` r
 today() %>% month()
@@ -1213,13 +1213,13 @@ today() %>% quarter()
 today() %>% wday()
 ```
 
-    ## [1] 5
+    ## [1] 6
 
 ``` r
 today() %>% wday(label = TRUE)
 ```
 
-    ## [1] gio
+    ## [1] ven
     ## Levels: dom < lun < mar < mer < gio < ven < sab
 
 ``` r
@@ -1242,13 +1242,13 @@ Date arithmetic is hard! Lots of conventions and unspoken assumptions. What does
 today() + days(1)   # one day from now
 ```
 
-    ## [1] "2018-05-18"
+    ## [1] "2018-05-19"
 
 ``` r
 today() + months(1) # one month from now
 ```
 
-    ## [1] "2018-06-17"
+    ## [1] "2018-06-18"
 
 ``` r
 # Round dates:
@@ -1351,4 +1351,83 @@ dmy("16/05-2018", tz = "Europe/Rome") == dmy("16/05-2018", tz = "Europe/London")
 
     ## [1] FALSE
 
-### Higher- and lower- precision dates
+### Higher- and lower- resolution dates and time
+
+`dmy_hms` (and obvious permutations) parse date and times to seconds:
+
+``` r
+# Using different representations:
+dmy_hms("17/05/2018T8:22,30") 
+```
+
+    ## [1] "2018-05-17 08:22:30 UTC"
+
+``` r
+dmy_hms("17/05/2018T8:22.30")
+```
+
+    ## [1] "2018-05-17 08:22:30 UTC"
+
+``` r
+dmy_hms("17-05-2018 8:22:30") 
+```
+
+    ## [1] "2018-05-17 08:22:30 UTC"
+
+``` r
+dmy_hms("17-05-2018 8-22-3") 
+```
+
+    ## [1] "2018-05-17 08:22:03 UTC"
+
+``` r
+dmy_hms("17-05-2018 8-22-3")
+```
+
+    ## [1] "2018-05-17 08:22:03 UTC"
+
+`hms` parses time-of-day values:
+
+``` r
+# Using different representations:
+hms("12:30:00")
+```
+
+    ## [1] "12H 30M 0S"
+
+``` r
+hms("12.31.00")
+```
+
+    ## [1] "12H 31M 0S"
+
+Both have variants for lower-resolution input:
+
+``` r
+# parse date and time to resolution of minutes
+dmy_hm("17-05-2018 8-22")
+```
+
+    ## [1] "2018-05-17 08:22:00 UTC"
+
+``` r
+# parse date and time to precision of hours
+dmy_h("17-05-2018 8")
+```
+
+    ## Warning: All formats failed to parse. No formats found.
+
+    ## [1] NA
+
+``` r
+# time at diffrent resolution
+hm("12.31") # with different separators
+```
+
+    ## [1] "12H 31M 0S"
+
+``` r
+ms("2.05") # with different separators
+```
+
+    ## [1] "2M 5S"
