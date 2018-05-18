@@ -15,10 +15,10 @@ See also their book [*R for Data Science: Import, Tidy, Transform, Visualize, an
 
 ## Schedule
 
-Date                 | Time        | Room              | Code 
+Date                 | Time        | Room              | Notebook 
 --                   | --          | --                | --   
 Wednesday 16/06/2018 | 10:30–12:30 | Aula 3 Toscanelli | [1_data_transformation.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/1_data_transformation.md) 
-Thursday 17/06/2018  | 10:30–12:30 | Aula 3 Toscanelli |      
+Thursday 17/06/2018  | 10:30–12:30 | Aula 3 Toscanelli | [2_data_input_output.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/2_data_input_output.md) 
 Friday 18/06/2018    | 10:30–12:30 | Aula 3 Toscanelli |      
 
 

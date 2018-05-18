@@ -11,6 +11,7 @@ editor_options:
 * `tidyverse`
 * `readxl` (installed with tidyverse)
 * `haven` (installed with tidyverse)
+* `glue` (installed with tidyverse)
 * `naniar` **new!**
 
 ```{r, eval=FALSE, message=FALSE, include=FALSE}
@@ -26,6 +27,7 @@ library(tidyverse)
 library(readxl)
 library(haven)
 library(naniar)
+library(glue)
 ```
 
 
@@ -136,6 +138,33 @@ write_rds(mtcars_stata, "./data/mtcars.rds")
 mtcars_stata <- read_rds("./data/mtcars.rds")
 ```
 
+
+
+## Applying functions to vector (list) elements with `map`
+
+`map()` applies a function to every element of a vector (atomic or list).
+Functions can be:
+
+* already defined in R: `sum`, `mean`, `filter`, `mutate`, ecc.
+* defined in place as “anonymous functions” with the syntax `~ .`, where `~` introduces a function and `.` is the argument
+
+```{r}
+list(1, 2, 3)
+
+map(list(1, 2, 3), ~ .^2)
+
+list(1, 2, 3) %>%  map(., ~ .^2) # anonymous function elevating square 
+list(1, 2, 3) %>%  map(~ .^2)
+```
+
+`tibbles` and `data.frames` are `lists` too! Hence, we can `map` them
+
+```{r}
+
+```
+
+
+
 ## Reading and merging all files in a directory
 
 Sometimes data is fractioned in disparate files, differing only by the value of a variable.
@@ -143,6 +172,28 @@ In the `./data/scattered/` directory, I fractioned the `flights` data by month.
 
 Enumerate files in that directory:
 ```{r}
-list.files("./data/")
+list.files("./data/scattered/") # bare file names
+list.files("./data/scattered/", full.names = TRUE) # relative path and file names
 ```
+
+Read files and assign them as elements of a list:
+```{r}
+flights_frac <- list.files("./data/scattered/", full.names = TRUE) %>% 
+  map(~ read_csv(.))
+```
+
+Append all the list elements (tibbles) in a single tibble
+```{r}
+flights_frac <- list.files("./data/scattered/", full.names = TRUE) %>% 
+  map(~ read_csv(.)) %>% 
+  bind_rows()
+```
+
+
+`map_df` maps the function directly into a tibble
+```{r}
+flights_frac <- list.files("./data/scattered/", full.names = TRUE) %>% 
+  map_df(~ read_csv(.))
+```
+
 
