@@ -1,0 +1,34 @@
+---
+title: "Tidy modelling "
+author: "Matteo Sostero"
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+## Packages for this session
+
+|    package    |          purpose           | installation |
+| ------------- | -------------------------- | ------------ |
+| `tidyverse`   | everything                 | CRAN         |
+| `nycflight13` | example datasets           | CRAN         |
+| `broom`       | tidying statistical models | CRAN         |
+
+
+If not yet installed, download packages with `install.packages("name")`.
+If asked, **do not compile from source**.
+```{r eval=FALSE, message=FALSE, include=FALSE}
+install.packages("broom")
+```
+
+
+```{r}
+flights %>%
+  arrange(year, month, day) %>%
+  split(.$month) %>%
+  set_names(month.name) %>%
+  map(~ lm(dep_delay ~ dep_time + day, data = .)) %>%
+  map(~ summary(.)$r.squared)
+```
+

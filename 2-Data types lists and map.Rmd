@@ -1,12 +1,13 @@
 ---
-title: "Data transformation"
+title: "Data types, lists, and mapping"
 author: "Matteo Sostero"
 output: github_document
 editor_options: 
   chunk_output_type: console
 ---
 
-**Packages needed for this session**:
+
+## Packages for this session
 
 |    package    |             purpose              |        installation        |
 | ------------- | -------------------------------- | -------------------------- |
@@ -16,281 +17,21 @@ editor_options:
 | `glue`        | pasting and interpreting strings | installed with `tidyverse` |
 
 
-## Install required packages
-
-We need `tidyverse` and related dependencies, and example data provided by`nycflights13`.
-
-`CTRL/CMD + ENTER` to run the block of code below:
-
+If not yet installed, download packages with `install.packages("name")`.
+If asked, **do not compile from source**.
 ```{r eval=FALSE, message=FALSE, include=FALSE}
 install.packages("tidyverse")
 install.packages("nycflights13")
 ```
 
-
-## Load the packages for this session
-
-`tidyverse` loads (eight) packages of the *tidyverse* and shows their version.
-The `nycflights13` package contains different example datasets, including *flights*
-
+Load the packages for the session:
 ```{r}
+# `tidyverse` loads the core packages of the *tidyverse* and shows their version.
 library(tidyverse)
 library(nycflights13)
-library(lubridate)
+library(lubridate) # tidyverse, not loaded by default
+library(glue) # tidyverse, not loaded by default
 ```
-
-`CTRL/CMD + L` clears the console.
-
-
-## Load example data
-
-load the `flights` dataset from `nycflights13`:
-```{r}
-data(flights)
-```
-
-## Preview, `glimpse` and `View` data
-
-Preview the data by invoking it: notice that not all variables are displayed for lack of space.
-```{r}
-flights
-```
-
-`glimpse` shows all variables as rows, variable types, and a preview of first few observations.
-```{r}
-glimpse(flights)
-```
-
-`View` shows the whole dataset in a dedicated tab of RStudio
-```{r, eval=FALSE}
-View(flights)
-```
-
-
-## `filter` rows matching conditions
-
-Keep only observations such that month = 1 AND day = 1
-```{r}
-flights %>% filter(month == 1, day == 1)
-```
-
-Logical operators include:
-
-* `==` strict equality
-* `>`, `<`, `>=`, `<=` inequalities
-* `%in%` to test if element belongs to list
-* `is.na()` to test for missing value `NA`
-
-Multiple conditions: 
-
-* `!` as logical NOT
-* `,` or `&` as logical AND
-
-```{r}
-flights %>% filter(month %in% c(2,4))
-```
-
-
-## `select` and `pull` variables
-
-We can select columns by name; the result is always a tibble.
-Pressing TAB with the cursorinside `select( )` provides variable name completion. 
-```{r}
-flights %>% select(year, month, day, dep_time, dep_delay)
-```
-
-We can also select columns based on patterns in their names:
-```{r}
-flights %>% select(contains("dep"), starts_with("sched"))
-```
-
-or select intervals based on position (careful!)
-```{r}
-flights %>% select(year:day)
-flights %>% select(1:4)
-```
-
-`pull()` returns a single column as a vector or values 
-```{r, R.options=list(max.print=20)}
-flights %>% pull(carrier)
-```
-
-We can combine this with `sort` (lexicographic sorting) and `unique` (deduplication) to see unique observations:
-```{r}
-flights %>% pull(carrier) %>% sort() %>% unique()
-```
-
-
-## `summarise` values
-
-We can compute one or more variable summaries for the whole dataset (column-wise) using `summarise`.
-
-`mean(., na.rm = TRUE)` computes the average value, excluding missing values.
-```{r}
-flights %>% 
-  summarise(
-    avg_dep_delay = mean(dep_delay, na.rm = TRUE),
-    avg_arr_delay = mean(arr_delay, na.rm = TRUE)
-  )
-```
-
-How many missing values are there?
-```{r}
-flights %>% 
-  summarise(
-    n_miss_dep_delay = sum(is.na(dep_delay)),
-    n_miss_arr_delay = sum(is.na(arr_delay))
-    )
-```
-
-This works because `is.na(dep_delay)` returns a *logical vector* (TRUE, FALSE) for all values of `dep_delay`. `sum` adds the TRUE values: 
-
-```{r}
-flights %>% pull(dep_delay) %>% is.na() %>% sum()
-```
-
-
-`group_by` summarises the values by groups:
-```{r}
-flights %>% 
-  group_by(carrier) %>% 
-  summarise(
-    avg_dep_delay = mean(dep_delay, na.rm = TRUE),
-    avg_arr_delay = mean(arr_delay, na.rm = TRUE)
-  )
-```
-
-
-## `mutate` observations
-
-Mutate adds new variables based on functions provided while preserving existing ones, 
-
-```{r}
-flights %>% 
-  mutate(
-    distance_k = distance / 1000,
-    air_time_h = air_time / 60
-  ) %>% 
-  select(starts_with("distance"), starts_with("air_time"))
-```
-
-
-## Count observations with `n` and `count`
-
-`n()` returns the total number of observation (in a group, if any).
-
-```{r}
-flights %>% group_by(carrier) %>% summarise(total_obs = n())
-```
-
-`tally` is short-hand for `summarise(n())`
-```{r}
-flights %>% group_by(carrier) %>% tally()
-```
-
-and `count` is short-hand for `group_by(carrier) %>% tally() %>% ungroup()`
-```{r}
-flights %>% count(carrier) 
-flights %>% count(carrier, dest) 
-```
-
-Nevertheless, `n()` with `sum` or `length` can be used for composing functions inside `mutate` or `summarise`:
-
-what share of flights arrived late, for each airline?
-```{r}
-flights %>% group_by(carrier) %>% summarise(sh_late_arr = sum(arr_delay > 0, na.rm = TRUE)/n() )
-```
-
-
-## `arrange` to sort rows
-
-`arrange` sorts observations by lexicographic order of one or more variables. `desc` arranges in descending order
-
-```{r}
-flights %>% count(carrier) %>% arrange(desc(n))
-```
-
-`top_n` sorts and returns the top n entries by value
-```{r}
-flights %>% top_n(10, arr_delay)
-```
-
-
-## Keep unique rows with `distinct`
-
-`distinct` finds unique combinations of  *rows in tibbles*, while `unique` finds unique *elements in vectors*
-
-What are the destination from each airport?
-```{r}
-flights %>% distinct(origin, dest)
-```
-
-Keep *all columns* with unique combinations of (origin, dest). 
-Notice that this keeps the **first** observation of duplicated columns:
-```{r}
-flights %>% distinct(origin, dest, .keep_all = TRUE)
-```
-
-
-## `join` (merge) tibbles by value
-
-`airlines` in `nycflights13` contains the full names of airlines, reported as `carrier`in flights
-```{r}
-data("airlines")
-airlines
-```
-
-Do `airlines` and `flights` have variables in common
-```{r}
-names(flights)
-names(airlines)
-
-intersect(names(flights), names(airlines))
-```
-
-What variables are in `airlines` but not in `flights` (and viceversa)?
-```{r}
-setdiff(names(airlines), names(flights))
-setdiff(names(flights), names(airlines))
-```
-
-They have `carrier` is in common. Does it have common values between tibbles?
-```{r}
-airlines %>% pull(carrier) %>% unique() %>% sort()
-flights %>% pull(carrier) %>% unique() %>% sort()
-
-intersect(
-  airlines %>% pull(carrier) %>% unique(),
-  flights %>% pull(carrier) %>% unique()
-  )
-```
-
-Then we can join the tibbles, to add `name` (full carrier name) from `airlines` to `flights`.
-
-`left_join(x, y, by)` return all rows from x where there are matching values in y, and all columns from x and y. If there are multiple matches between x and y, all combination of the matches are returned.
-
-See also `right_join`, `full_join`, `inner_join`, `anti_join`...
-we use `select(new_name = name)` to rename variables on the spot.
-
-```{r}
-left_join(flights, airlines, by = "carrier") %>% 
-  select(call_sign = carrier, carrier_name = name)
-```
-
-Did we miss anything? Compare results with `anti_join`
-
-```{r}
-anti_join(airlines, flights, by = "carrier")
-```
-
-Let's add a ficticious "SA" "Sant'Anna" airline and see:
-```{r}
-airlines_sa <- airlines %>%
-  add_row(carrier = "SA", name = "Sant'Anna Airlines")
-
-anti_join(airlines_sa, flights, by = "carrier")
-```
-
 
 ## Variable types
 `glimpse` shows all variable names and `<types>`, including:
@@ -333,15 +74,15 @@ typeof("a")
 
 The main type of *R* objects are *vectors*, either:
 
-1. __lists__: (heterogeneous) contain elements of different type;
-2. __atomic vectors__: contain elements of same type:
+1. **lists**: (heterogeneous) contain elements of different type;
+2. **atomic vectors**: contain elements of same type:
     1. *numeric*: *integer* or *double*
     2. *character*
     3. *logical*
     4. *complex*
     5. *raw*
     
-We can construct __atomic vectors__ by *concatenating* `,`-sepatated elements with `c( )` 
+We can construct **atomic vectors** by *concatenating* `,`-sepatated elements with `c( )` 
 
 Atomic vectors:
 ```{r}
@@ -352,17 +93,16 @@ typeof(c(1, 2, 3))
 typeof(c(1L, 2L, 3L))
 
 # …character…
-typeof(c("a","b"))
-typeof(c("1","2"))
+typeof(c("a", "b"))
+typeof(c("1", "2"))
 
 # …logical…
-typeof(c(TRUE,FALSE))
+typeof(c(TRUE, FALSE))
 typeof(NA)
-typeof(c(1,2) == 1 )
-
+typeof(c(1, 2) == 1)
 ```
 
-We can initialise empty __lists__ of lenght *n* with `vector("list", n)` and assign elements by positions
+We can initialise empty **lists** of lenght *n* with `vector("list", n)` and assign elements by positions
 ```{r}
 ex_list <- vector("list", 4) # initialise list
 
@@ -387,27 +127,26 @@ Functions can be:
 * defined in place as “anonymous functions” `.f` with the syntax `~ .`, where `~` introduces a function and `.` is the argument
 ```{r}
 # a list of three elements: 2, 4, and 6
-list(2, 4, 6) 
+list(2, 4, 6)
 # every list element is actually a lenght-1 atomic vector
 
 # we map the list elements .x to a function .f = ~ .^2
 # the function is introduced by ~ and takes the argument . and raises ^ to the power of 2
 map(.x = list(2, 4, 6), .f = ~ .^2)
 
-# equivalent to piping the list as first argument of map(.) 
+# equivalent to piping the list as first argument of map(.)
 # and omit the argument names .x and .f
 list(2, 4, 6) %>% map(.f = ~ .^2)
-
 ```
 
 we can map lists containing atomic vectors of different lenghts:
 ```{r}
 # A list of three elements, containing numeric vectors of different lenghts
-list(c(1,2), c(3,4,5,6), c(7,8,9)) 
+list(c(1, 2), c(3, 4, 5, 6), c(7, 8, 9))
 
 # we map functions that allow vector arguments, and returns a single element
-list(c(1,2), c(3,4,5,6), c(7,8,9)) %>% map(~ sum(.))
-list(c(1,2), c(3,4,5,6), c(7,8,9)) %>% map(~ mean(.))
+list(c(1, 2), c(3, 4, 5, 6), c(7, 8, 9)) %>% map(~ sum(.))
+list(c(1, 2), c(3, 4, 5, 6), c(7, 8, 9)) %>% map(~ mean(.))
 ```
 
 we can map functions to list of string vectors as well.
@@ -424,21 +163,23 @@ is.list(flights) # the tibble is also a list
 length(flights) # a list of 19 elements (the variables, or columns)
 
 # let's take the first elements of the “list” flights:
-flights[[1]] 
+flights[[1]]
 # it's a numeric vector, with as many elements as observations (rows) of flights
 ```
  
 We can `map` the variables that make up `flights`
 ```{r}
-flights %>% map(~ typeof(.)) # what is the type of each variable
+# what is the type of each variable
+flights %>% map(~ typeof(.))
 
+# is each variable of type integer?
 flights %>% map(~ is.integer(.))
 
+# find number of elements in each variable
 flights %>% map(~ length(.))
 
+# count missing elements in each variable
 flights %>% map(~ sum(is.na(.)))
-
-flights %>% map_dfr(~ sum(is.na(.)))
 ```
 
 
@@ -463,8 +204,8 @@ typeof(carriers) # factors are stored as type integer
 
 We can manually set factor levels:
 ```{r}
-c("a", "b") %>% factor(levels = c("a", "b"))           # levels all observed in the vector
-c("a", "b") %>% factor(levels = c("a", "b", "c"))      # as before, and one more level
+c("a", "b") %>% factor(levels = c("a", "b")) # levels all observed in the vector
+c("a", "b") %>% factor(levels = c("a", "b", "c")) # as before, and one more level
 c("a", "b", "z") %>% factor(levels = c("a", "b", "c")) # levels in data are different
 ```
 
@@ -480,7 +221,7 @@ c("a", "b") %>% factor(labels = c("alpha", "beta")) # "a" = "alpha" and "b" = "b
 c("a", "b") %>% factor(labels = c("beta", "alpha")) # mind the order! "a" = "beta" and "b" = "alpha"
 
 # better carefully set both levels and labels:
-c("a", "b") %>% factor(levels = c("b", "a"), labels = c("beta", "alpha")) 
+c("a", "b") %>% factor(levels = c("b", "a"), labels = c("beta", "alpha"))
 ```
 
 
@@ -497,17 +238,17 @@ flights %>%
   mutate(
     carrier = factor(
       carrier,
-      levels = airlines %>% pull(carrier), 
+      levels = airlines %>% pull(carrier),
       labels = airlines %>% pull(name)
     )
-  ) %>% 
+  ) %>%
   select(year:day, carrier)
 ```
 
 in shorhand, using `$` to select a variable in a tibble
 ```{r}
 flights %>%
-  mutate(carrier = factor(carrier, levels = airlines$carrier, labels = airlines$name)) %>% 
+  mutate(carrier = factor(carrier, levels = airlines$carrier, labels = airlines$name)) %>%
   select(year:day, carrier)
 ```
 
@@ -528,12 +269,14 @@ mdy("05.15.2018") # …and with different separators
 
 mdy("05.15.2018") == dmy("15/05/2018") # they are parsed to identical representations
 
-mdy("May 17th 2018")  # Can parse natural language
+mdy("May 17th 2018") # Can parse natural language
 dmy("17 Maggio 2018") # also in non-English other locales!
 
 # Parse heterogeneous formats (still Y-M-D), but written differently
-c(20090101, "2009-01-02", "2009 01 03", "2009-1-4",
-  "2009-1, 5", "Created on 2009 1 6", "200901 !!! 07") %>% ymd()
+c(
+  20090101, "2009-01-02", "2009 01 03", "2009-1-4",
+  "2009-1, 5", "Created on 2009 1 6", "200901 !!! 07"
+) %>% ymd()
 ```
 
 Operations with dates:
@@ -563,14 +306,14 @@ today() %>% dst() # is it Daylight Savings Time?
 Date arithmetic is hard! Lots of conventions and unspoken assumptions. What does "a month from now" mean exactly?
 
 ```{r}
-today() + days(1)   # one day from now
+today() + days(1) # one day from now
 today() + months(1) # one month from now
 
 # Round dates:
-today() %>% floor_date(unit = "month")   # round down to first day of month
+today() %>% floor_date(unit = "month") # round down to first day of month
 today() %>% ceiling_date(unit = "month") # round up to first day of next month
 today() %>% ceiling_date(unit = "month") - days(1) # round up to last day of this month
-today() %>% rollback()                  # round down to last day of previous month 
+today() %>% rollback() # round down to last day of previous month
 today() %>% rollback(roll_to_first = T) # round down first day of same month
 ```
 
@@ -579,18 +322,20 @@ today() %>% rollback(roll_to_first = T) # round down first day of same month
 ```{r}
 flights %>% select(year, month, day) # separate year, month, day (integer) variables
 
-flights %>% select(year, month, day) %>%
+flights %>%
+  select(year, month, day) %>%
   unite(date, year, month, day, sep = "-") # paste variables together as (dash-separated) character
 
-flights %>% select(year, month, day) %>%
-  unite(date, year, month, day, sep = "-") %>% 
+flights %>%
+  select(year, month, day) %>%
+  unite(date, year, month, day, sep = "-") %>%
   mutate(date = ymd(date))
 ```
 
 
 What's in a date? Obviously *day*, *month*, *year*. But also time zone! (by default UTC)
 ```{r}
-dmy("16/05-2018", tz = "Europe/Rome") == dmy("16/05-2018", tz = "Europe/London") 
+dmy("16/05-2018", tz = "Europe/Rome") == dmy("16/05-2018", tz = "Europe/London")
 ```
 
 
@@ -599,10 +344,10 @@ dmy("16/05-2018", tz = "Europe/Rome") == dmy("16/05-2018", tz = "Europe/London")
 `dmy_hms` (and obvious permutations) parse date and times to seconds:
 ```{r}
 # Using different representations:
-dmy_hms("17/05/2018T8:22,30") 
+dmy_hms("17/05/2018T8:22,30")
 dmy_hms("17/05/2018T8:22.30")
-dmy_hms("17-05-2018 8:22:30") 
-dmy_hms("17-05-2018 8-22-3") 
+dmy_hms("17-05-2018 8:22:30")
+dmy_hms("17-05-2018 8-22-3")
 dmy_hms("17-05-2018 8-22-3")
 ```
 

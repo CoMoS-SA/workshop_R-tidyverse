@@ -1,0 +1,290 @@
+---
+title: "Data transformation"
+author: "Matteo Sostero"
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+## Packages for this session
+
+|    package    |             purpose              |        installation        |
+| ------------- | -------------------------------- | -------------------------- |
+| `tidyverse`   | everything                       | CRAN                       |
+| `nycflight13` | example datasets                 | CRAN                       |
+| `lubridate`   | working with dates               | installed with `tidyverse` |
+
+We need `tidyverse` and related dependencies.
+The `nycflights13` package contains different example datasets, including *flights*
+
+
+If not yet installed, download packages with `install.packages("name")`.
+If asked, **do not compile from source**.
+
+`CTRL/CMD + ENTER` to run the block of code below:
+
+```{r eval=FALSE, message=FALSE, include=FALSE}
+install.packages("tidyverse")
+install.packages("nycflights13")
+```
+
+`CTRL/CMD + L` clears the console.
+
+Load the packages for the session:
+```{r}
+# `tidyverse` loads the core packages of the *tidyverse* and shows their version.
+library(tidyverse)
+library(nycflights13)
+library(lubridate) # tidyverse, not loaded by default
+```
+
+
+## Load example data
+
+load the `flights` dataset from `nycflights13`:
+```{r}
+data(flights)
+```
+
+## Preview, `glimpse` and `View` data
+
+Preview the data by invoking it: notice that not all variables are displayed for lack of space.
+```{r}
+flights
+```
+
+`glimpse` shows all variables as rows, variable types, and a preview of first few observations.
+```{r}
+glimpse(flights)
+```
+
+`View` shows the whole dataset in a dedicated tab of RStudio
+```{r, eval=FALSE}
+View(flights)
+```
+
+
+## `filter` rows matching conditions
+
+Keep only observations such that month = 1 AND day = 1
+```{r}
+flights %>% filter(month == 1, day == 1)
+```
+
+Logical operators include:
+
+* `==` strict equality
+* `>`, `<`, `>=`, `<=` inequalities
+* `%in%` to test if element belongs to list
+* `is.na()` to test for missing value `NA`
+
+Multiple conditions: 
+
+* `!` as logical NOT
+* `,` or `&` as logical AND
+
+```{r}
+flights %>% filter(month %in% c(2, 4))
+```
+
+
+## `select` and `pull` variables
+
+We can select columns by name; the result is always a tibble.
+Pressing TAB with the cursorinside `select( )` provides variable name completion. 
+```{r}
+flights %>% select(year, month, day, dep_time, dep_delay)
+```
+
+We can also select columns based on patterns in their names:
+```{r}
+flights %>% select(contains("dep"), starts_with("sched"))
+```
+
+or select intervals based on position (careful!)
+```{r}
+flights %>% select(year:day)
+flights %>% select(1:4)
+```
+
+`pull()` returns a single column as a vector or values 
+```{r, R.options=list(max.print=20)}
+flights %>% pull(carrier)
+```
+
+We can combine this with `sort` (lexicographic sorting) and `unique` (deduplication) to see unique observations:
+```{r}
+flights %>% pull(carrier) %>% sort() %>% unique()
+```
+
+
+## `summarise` values
+
+We can compute one or more variable summaries for the whole dataset (column-wise) using `summarise`.
+
+`mean(., na.rm = TRUE)` computes the average value, excluding missing values.
+```{r}
+flights %>%
+  summarise(
+    avg_dep_delay = mean(dep_delay, na.rm = TRUE),
+    avg_arr_delay = mean(arr_delay, na.rm = TRUE)
+  )
+```
+
+How many missing values are there?
+```{r}
+flights %>%
+  summarise(
+    n_miss_dep_delay = sum(is.na(dep_delay)),
+    n_miss_arr_delay = sum(is.na(arr_delay))
+  )
+```
+
+This works because `is.na(dep_delay)` returns a *logical vector* (TRUE, FALSE) for all values of `dep_delay`. `sum` adds the TRUE values: 
+
+```{r}
+flights %>% pull(dep_delay) %>% is.na() %>% sum()
+```
+
+
+`group_by` summarises the values by groups:
+```{r}
+flights %>%
+  group_by(carrier) %>%
+  summarise(
+    avg_dep_delay = mean(dep_delay, na.rm = TRUE),
+    avg_arr_delay = mean(arr_delay, na.rm = TRUE)
+  )
+```
+
+
+## `mutate` observations
+
+Mutate adds new variables based on functions provided while preserving existing ones, 
+
+```{r}
+flights %>%
+  mutate(
+    distance_k = distance / 1000,
+    air_time_h = air_time / 60
+  ) %>%
+  select(starts_with("distance"), starts_with("air_time"))
+```
+
+
+## Count observations with `n` and `count`
+
+`n()` returns the total number of observation (in a group, if any).
+
+```{r}
+flights %>% group_by(carrier) %>% summarise(total_obs = n())
+```
+
+`tally` is short-hand for `summarise(n())`
+```{r}
+flights %>% group_by(carrier) %>% tally()
+```
+
+and `count` is short-hand for `group_by(carrier) %>% tally() %>% ungroup()`
+```{r}
+flights %>% count(carrier)
+flights %>% count(carrier, dest)
+```
+
+Nevertheless, `n()` with `sum` or `length` can be used for composing functions inside `mutate` or `summarise`:
+
+what share of flights arrived late, for each airline?
+```{r}
+flights %>% group_by(carrier) %>% summarise(sh_late_arr = sum(arr_delay > 0, na.rm = TRUE) / n())
+```
+
+
+## `arrange` to sort rows
+
+`arrange` sorts observations by lexicographic order of one or more variables. `desc` arranges in descending order
+
+```{r}
+flights %>% count(carrier) %>% arrange(desc(n))
+```
+
+`top_n` sorts and returns the top n entries by value
+```{r}
+flights %>% top_n(10, arr_delay)
+```
+
+
+## Keep unique rows with `distinct`
+
+`distinct` finds unique combinations of  *rows in tibbles*, while `unique` finds unique *elements in vectors*
+
+What are the destination from each airport?
+```{r}
+flights %>% distinct(origin, dest)
+```
+
+Keep *all columns* with unique combinations of (origin, dest). 
+Notice that this keeps the **first** observation of duplicated columns:
+```{r}
+flights %>% distinct(origin, dest, .keep_all = TRUE)
+```
+
+
+## `join` (merge) tibbles by value
+
+`airlines` in `nycflights13` contains the full names of airlines, reported as `carrier`in flights
+```{r}
+data("airlines")
+airlines
+```
+
+Do `airlines` and `flights` have variables in common
+```{r}
+names(flights)
+names(airlines)
+
+intersect(names(flights), names(airlines))
+```
+
+What variables are in `airlines` but not in `flights` (and viceversa)?
+```{r}
+setdiff(names(airlines), names(flights))
+setdiff(names(flights), names(airlines))
+```
+
+They have `carrier` is in common. Does it have common values between tibbles?
+```{r}
+airlines %>% pull(carrier) %>% unique() %>% sort()
+flights %>% pull(carrier) %>% unique() %>% sort()
+
+intersect(
+  airlines %>% pull(carrier) %>% unique(),
+  flights %>% pull(carrier) %>% unique()
+)
+```
+
+Then we can join the tibbles, to add `name` (full carrier name) from `airlines` to `flights`.
+
+`left_join(x, y, by)` return all rows from x where there are matching values in y, and all columns from x and y. If there are multiple matches between x and y, all combination of the matches are returned.
+
+See also `right_join`, `full_join`, `inner_join`, `anti_join`...
+we use `select(new_name = name)` to rename variables on the spot.
+
+```{r}
+left_join(flights, airlines, by = "carrier") %>%
+  select(call_sign = carrier, carrier_name = name)
+```
+
+Did we miss anything? Compare results with `anti_join`
+
+```{r}
+anti_join(airlines, flights, by = "carrier")
+```
+
+Let's add a ficticious "SA" "Sant'Anna" airline and see:
+```{r}
+airlines_sa <- airlines %>%
+  add_row(carrier = "SA", name = "Sant'Anna Airlines")
+
+anti_join(airlines_sa, flights, by = "carrier")
+```

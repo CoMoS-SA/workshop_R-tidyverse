@@ -6,7 +6,8 @@ editor_options:
   chunk_output_type: console
 ---
 
-**Packages needed for this session**:
+
+## Packages for this session
 
 |    package    |             purpose              |       installation       |
 | ------------- | -------------------------------- | ------------------------ |
@@ -14,24 +15,25 @@ editor_options:
 | `nycflight13` | example datasets                 | CRAN                     |
 | `lubridate`   | working with dates               | bundled with `tidyverse` |
 | `glue`        | pasting and interpreting strings | bundled with `tidyverse` |
-| `readxl`      | read Excel figles                | bundled with `tidyverse` |
+| `readxl`      | read Excel files                 | bundled with `tidyverse` |
 | `naniar`      | handling of NA (missing values)  | CRAN                     |
 
 
-```{r, eval=FALSE, message=FALSE, include=FALSE}
+If not yet installed, download packages with `install.packages("name")`.
+If asked, **do not compile from source**.
+```{r eval=FALSE, message=FALSE, include=FALSE}
 install.packages("naniar")
 ```
 
-## Load the packages for this session
-`tidyverse` loads (eight) packages of the *tidyverse* and shows their version.
+Load the packages for the session:
+`tidyverse` loads the core packages of the *tidyverse* and shows their version.
  Also load `readxl` to read Excel files and `haven` for importing and exporting Stata, SAS and SPSS data.
-
 ```{r}
 library(tidyverse)
-library(readxl)
-library(haven)
 library(naniar)
-library(glue)
+library(readxl) # tidyverse, not loaded by default
+library(haven) # tidyverse, not loaded by default
+library(glue) # tidyverse, not loaded by default
 ```
 
 
@@ -117,7 +119,7 @@ We can import Excel workbooks with `read_excel`: it works with `.xlsx` and `.xls
 excel_sheets("./data/nycflights.xlsx")
 
 # Access a given sheet
-flights_xl  <- read_excel("./data/nycflights.xlsx", sheet = "Flights")
+flights_xl <- read_excel("./data/nycflights.xlsx", sheet = "Flights")
 airlines_xl <- read_excel("./data/nycflights.xlsx", sheet = "Airlines")
 ```
 NB: the package `readxl` does not provide functions to *export* Excel workbooks, but the package `openxls` does.
@@ -125,7 +127,7 @@ NB: the package `readxl` does not provide functions to *export* Excel workbooks,
 
 ## Importing and exporting Stata `.dta` files using `haven`
 ```{r}
-# read .dta file. 
+# read .dta file.
 # Default text encoding in Stata >= 14 is utf-8, but before also be "windows-1252"
 
 mtcars_stata <- read_dta("./data/mtcars.dta")
@@ -144,32 +146,6 @@ mtcars_stata <- read_rds("./data/mtcars.rds")
 ```
 
 
-
-## Applying functions to vector (list) elements with `map`
-
-`map()` applies a function to every element of a vector (atomic or list).
-Functions can be:
-
-* already defined in R: `sum`, `mean`, `filter`, `mutate`, ecc.
-* defined in place as “anonymous functions” with the syntax `~ .`, where `~` introduces a function and `.` is the argument
-
-```{r}
-list(1, 2, 3)
-
-map(list(1, 2, 3), ~ .^2)
-
-list(1, 2, 3) %>%  map(., ~ .^2) # anonymous function elevating square 
-list(1, 2, 3) %>%  map(~ .^2)
-```
-
-`tibbles` and `data.frames` are `lists` too! Hence, we can `map` them
-
-```{r}
-
-```
-
-
-
 ## Reading and merging all files in a directory
 
 Sometimes data is fractioned in disparate files, differing only by the value of a variable.
@@ -183,22 +159,20 @@ list.files("./data/scattered/", full.names = TRUE) # relative path and file name
 
 Read files and assign them as elements of a list:
 ```{r}
-flights_frac <- list.files("./data/scattered/", full.names = TRUE) %>% 
+flights_frac <- list.files("./data/scattered/", full.names = TRUE) %>%
   map(~ read_csv(.))
 ```
 
 Append all the list elements (tibbles) in a single tibble
 ```{r}
-flights_frac <- list.files("./data/scattered/", full.names = TRUE) %>% 
-  map(~ read_csv(.)) %>% 
+flights_frac <- list.files("./data/scattered/", full.names = TRUE) %>%
+  map(~ read_csv(.)) %>%
   bind_rows()
 ```
 
 
 `map_df` maps the function directly into a tibble
 ```{r}
-flights_frac <- list.files("./data/scattered/", full.names = TRUE) %>% 
+flights_frac <- list.files("./data/scattered/", full.names = TRUE) %>%
   map_df(~ read_csv(.))
 ```
-
-

@@ -192,3 +192,5 @@ TSWLatexianTemp*
 .Rproj.user
 README.html
 .Rhistory
+
+/inst/
