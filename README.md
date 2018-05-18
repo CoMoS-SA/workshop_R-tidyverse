@@ -12,18 +12,22 @@ The material is based on [*R for Data Science*](http://r4ds.had.co.nz/index.html
 See also their book [*R for Data Science: Import, Tidy, Transform, Visualize, and Model Data*](https://www.amazon.it/dp/1491910399) published by O'Reilly Media, 2017.
 
 
-## Important Preparation
+## Important Preparation :warning:
 
-* Please bring your **laptop** :computer: and **charger** :electric_plug:;
-* Install an **up-to-date** version of [R](https://cran.r-project.org/);
-* Install an **up-to-date** version of [RStudio](https://www.rstudio.com/products/rstudio/download/#download);
-* (Windows only) install [Rtools](https://cran.r-project.org/bin/windows/Rtools/);
-* Install [git](https://git-scm.com/download/) on your system;
-* Get a copy of the material:
-    1. Create a new project in RStudio: `File > New Project > Version Control > Git`
+Please bring your **laptop** :computer: and **charger** :electric_plug:!
+
+Preparation (10 minutes :hourglass:):
+
+1. Install an **up-to-date** version of [R](https://cran.r-project.org/);
+2. Install an **up-to-date** version of [RStudio](https://www.rstudio.com/products/rstudio/download/#download);
+3. (Windows only) install [Rtools](https://cran.r-project.org/bin/windows/Rtools/);
+4. Install [git](https://git-scm.com/download/) on your system;
+5. Get a copy of the material by creating a new project in **RStudio**: 
+    1. `File > New Project > Version Control > Git`
     2. The repository URL is [https://github.com/CoMoS-SA/workshop-R-tidyverse.git](https://github.com/CoMoS-SA/workshop-R-tidyverse.git)
-    3. :ballot_box_with_check: “Open in new session”
-* In RStudio, install *tidyverse* and *nycflights13* in *R*:
+    3. Create project as a subdirectory of your choice;
+    4. :ballot_box_with_check: “Open in new session”
+6. In RStudio, install `tidyverse` and `nycflights13`:
 ```R
 install.packages("tidyverse")
 install.packages("nycflights13")
@@ -41,9 +45,8 @@ Friday 18/05/2018    | 10:30–12:30 | Aula 3 Toscanelli
 By popular demand, more sessions will be scheduled in the next few weeks.
 
 
-## Outline:
-
-In no particular order:
+## Outline
+(In no particular order):
 
 * :page_with_curl: **Data input**: importing data from “messy” files, reading common and exotic formats and directory structures; preserving metadata; web scraping.
 * :triangular_ruler: **Data transformation**: “tidying” strategies for fixing common issues with data; text processing with regular expressions; reshaping (wide-long) tabular data; merging and appending data.
@@ -52,11 +55,12 @@ In no particular order:
 * :bar_chart: **Visualization**: plot data with *ggplot2*; principles and recipes for visualization.
 
 
-## Session notebooks:
+## Material
+Course [slides](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/Slides%20Data%20Science%20R.pdf).
 
+Session notebooks:
 * [1-Data_transformation.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/notebooks/1-Data_transformation.md)
 * [2-Data_types_lists_map.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/notebooks/2-Data_types_lists_map.md)
 * [3-Data_input_output.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/notebooks/3-Data_input_output.md)
 * [4-Tidy_modelling.md](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/notebooks/4-Tidy_modelling.md)
 
-See also the [course slides](https://github.com/CoMoS-SA/workshop-R-tidyverse/blob/master/Slides%20Data%20Science%20R.pdf).
