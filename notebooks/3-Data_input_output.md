@@ -7,29 +7,29 @@ Packages for this session
 
 | package       | purpose                          | installation             |
 |---------------|----------------------------------|--------------------------|
-| `tidyverse`   | everything                       | CRAN                     |
-| `nycflight13` | example datasets                 | CRAN                     |
-| `lubridate`   | working with dates               | bundled with `tidyverse` |
-| `glue`        | pasting and interpreting strings | bundled with `tidyverse` |
-| `readxl`      | read Excel files                 | bundled with `tidyverse` |
-| `naniar`      | handling of NA (missing values)  | CRAN                     |
+| *tidyverse*   | everything                       | CRAN                     |
+| *nycflight13* | example datasets                 | CRAN                     |
+| *lubridate*   | working with dates               | bundled with *tidyverse* |
+| *glue*        | pasting and interpreting strings | bundled with *tidyverse* |
+| *readxl*      | read Excel files                 | bundled with *tidyverse* |
+| *naniar*      | handling of NA (missing values)  | CRAN                     |
 
 If not yet installed, download packages with `install.packages("name")`. If asked, **do not compile from source**.
 
-Load the packages for the session: `tidyverse` loads the core packages of the *tidyverse* and shows their version. Also load `readxl` to read Excel files and `haven` for importing and exporting Stata, SAS and SPSS data.
+Load the packages for the session: *tidyverse* loads the core packages of the *tidyverse* and shows their version. Also load *readxl* to read Excel files and *haven* for importing and exporting Stata, SAS and SPSS data.
 
 ``` r
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ---------------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages -------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 2.2.1     v purrr   0.2.4
     ## v tibble  1.4.2     v dplyr   0.7.4
     ## v tidyr   0.8.0     v stringr 1.3.1
     ## v readr   1.1.1     v forcats 0.3.0
 
-    ## -- Conflicts ------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ----------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -105,7 +105,7 @@ glimpse(flights_import)
     ## $ minute         <int> 15, 29, 40, 45, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, ...
     ## $ time_hour      <dttm> 2013-01-01 05:00:00, 2013-01-01 05:00:00, 2013...
 
-inspect the data using `miss_var_summary` from `naniar` to see how many are missing:
+inspect the data using `miss_var_summary` from *naniar* to see how many are missing:
 
 ``` r
 flights_import %>% miss_var_summary()
@@ -318,7 +318,7 @@ flights_import <- read_csv("https://raw.githubusercontent.com/CoMoS-SA/workshop-
     ##   time_hour = col_datetime(format = "")
     ## )
 
-Importing Excel files with `readxl`
+Importing Excel files with *readxl*
 -----------------------------------
 
 We can import Excel workbooks with `read_excel`: it works with `.xlsx` and `.xls` files.
@@ -336,9 +336,9 @@ flights_xl <- read_excel("./data/nycflights.xlsx", sheet = "Flights")
 airlines_xl <- read_excel("./data/nycflights.xlsx", sheet = "Airlines")
 ```
 
-NB: the package `readxl` does not provide functions to *export* Excel workbooks, but the package `openxls` does.
+NB: the package *readxl* does not provide functions to *export* Excel workbooks, but the package `openxls` does.
 
-Importing and exporting Stata `.dta` files using `haven`
+Importing and exporting Stata `.dta` files using *haven*
 --------------------------------------------------------
 
 ``` r

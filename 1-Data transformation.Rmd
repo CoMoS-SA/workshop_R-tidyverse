@@ -11,12 +11,12 @@ editor_options:
 
 |    package    |             purpose              |        installation        |
 | ------------- | -------------------------------- | -------------------------- |
-| `tidyverse`   | everything                       | CRAN                       |
-| `nycflight13` | example datasets                 | CRAN                       |
-| `lubridate`   | working with dates               | installed with `tidyverse` |
+| *tidyverse*   | everything                       | CRAN                       |
+| *nycflight13* | example datasets                 | CRAN                       |
+| *lubridate*   | working with dates               | installed with *tidyverse* |
 
-We need `tidyverse` and related dependencies.
-The `nycflights13` package contains different example datasets, including *flights*
+We need *tidyverse* and related dependencies.
+The *nycflights13* package contains different example datasets, including *flights*
 
 
 If not yet installed, download packages with `install.packages("name")`.
@@ -33,7 +33,7 @@ install.packages("nycflights13")
 
 Load the packages for the session:
 ```{r}
-# `tidyverse` loads the core packages of the *tidyverse* and shows their version.
+# *tidyverse* loads the core packages of the *tidyverse* and shows their version.
 library(tidyverse)
 library(nycflights13)
 library(lubridate) # tidyverse, not loaded by default
@@ -42,7 +42,7 @@ library(lubridate) # tidyverse, not loaded by default
 
 ## Load example data
 
-load the `flights` dataset from `nycflights13`:
+load the `flights` dataset from *nycflights13*:
 ```{r}
 data(flights)
 ```
@@ -232,7 +232,7 @@ flights %>% distinct(origin, dest, .keep_all = TRUE)
 
 ## `join` (merge) tibbles by value
 
-`airlines` in `nycflights13` contains the full names of airlines, reported as `carrier`in flights
+`airlines` in *nycflights13* contains the full names of airlines, reported as `carrier`in flights
 ```{r}
 data("airlines")
 airlines

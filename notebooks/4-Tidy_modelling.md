@@ -7,16 +7,16 @@ Packages for this session
 
 | package       | purpose                    | installation |
 |---------------|----------------------------|--------------|
-| `tidyverse`   | everything                 | CRAN         |
-| `nycflight13` | example datasets           | CRAN         |
-| `broom`       | tidying statistical models | CRAN         |
+| *tidyverse*   | everything                 | CRAN         |
+| *nycflight13* | example datasets           | CRAN         |
+| *broom*       | tidying statistical models | CRAN         |
 
 If not yet installed, download packages with `install.packages("name")`. If asked, **do not compile from source**.
 
 Load the packages for the session:
 
 ``` r
-# `tidyverse` loads the core packages of the *tidyverse* and shows their version.
+# *tidyverse* loads the core packages of the *tidyverse* and shows their version.
 library(tidyverse)
 ```
 

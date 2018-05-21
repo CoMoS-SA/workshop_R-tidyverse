@@ -7,11 +7,11 @@ Packages for this session
 
 | package       | purpose            | installation               |
 |---------------|--------------------|----------------------------|
-| `tidyverse`   | everything         | CRAN                       |
-| `nycflight13` | example datasets   | CRAN                       |
-| `lubridate`   | working with dates | installed with `tidyverse` |
+| *tidyverse*   | everything         | CRAN                       |
+| *nycflight13* | example datasets   | CRAN                       |
+| *lubridate*   | working with dates | installed with *tidyverse* |
 
-We need `tidyverse` and related dependencies. The `nycflights13` package contains different example datasets, including *flights*
+We need *tidyverse* and related dependencies. The *nycflights13* package contains different example datasets, including *flights*
 
 If not yet installed, download packages with `install.packages("name")`. If asked, **do not compile from source**.
 
@@ -22,18 +22,18 @@ If not yet installed, download packages with `install.packages("name")`. If aske
 Load the packages for the session:
 
 ``` r
-# `tidyverse` loads the core packages of the *tidyverse* and shows their version.
+# *tidyverse* loads the core packages of the *tidyverse* and shows their version.
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ---------------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages -------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 2.2.1     v purrr   0.2.4
     ## v tibble  1.4.2     v dplyr   0.7.4
     ## v tidyr   0.8.0     v stringr 1.3.1
     ## v readr   1.1.1     v forcats 0.3.0
 
-    ## -- Conflicts ------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ----------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -52,7 +52,7 @@ library(lubridate) # tidyverse, not loaded by default
 Load example data
 -----------------
 
-load the `flights` dataset from `nycflights13`:
+load the `flights` dataset from *nycflights13*:
 
 ``` r
 data(flights)
@@ -621,7 +621,7 @@ flights %>% distinct(origin, dest, .keep_all = TRUE)
 `join` (merge) tibbles by value
 -------------------------------
 
-`airlines` in `nycflights13` contains the full names of airlines, reported as `carrier`in flights
+`airlines` in *nycflights13* contains the full names of airlines, reported as `carrier`in flights
 
 ``` r
 data("airlines")

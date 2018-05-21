@@ -27,7 +27,7 @@ Preparation (10 minutes :hourglass:):
     2. The repository URL is [https://github.com/CoMoS-SA/workshop-R-tidyverse.git](https://github.com/CoMoS-SA/workshop-R-tidyverse.git)
     3. Create project as a subdirectory of your choice;
     4. :ballot_box_with_check: “Open in new session”
-6. In RStudio, install `tidyverse` and `nycflights13`:
+6. In RStudio, install *tidyverse* and *nycflights13*:
 ```R
 install.packages("tidyverse")
 install.packages("nycflights13")

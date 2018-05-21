@@ -7,17 +7,17 @@ Packages for this session
 
 | package       | purpose                          | installation               |
 |---------------|----------------------------------|----------------------------|
-| `tidyverse`   | everything                       | CRAN                       |
-| `nycflight13` | example datasets                 | CRAN                       |
-| `lubridate`   | working with dates               | installed with `tidyverse` |
-| `glue`        | pasting and interpreting strings | installed with `tidyverse` |
+| *tidyverse*   | everything                       | CRAN                       |
+| *nycflight13* | example datasets                 | CRAN                       |
+| *lubridate*   | working with dates               | installed with *tidyverse* |
+| *glue*        | pasting and interpreting strings | installed with *tidyverse* |
 
 If not yet installed, download packages with `install.packages("name")`. If asked, **do not compile from source**.
 
 Load the packages for the session:
 
 ``` r
-# `tidyverse` loads the core packages of the *tidyverse* and shows their version.
+# *tidyverse* loads the core packages of the *tidyverse* and shows their version.
 library(tidyverse)
 ```
 
@@ -830,7 +830,7 @@ flights %>%
 Date and time variables
 -----------------------
 
-Dates are generally difficult! `lubridate` package (in `tidyverse`, but not loaded automatically) makes it easier:
+Dates are generally difficult! *lubridate* package (in *tidyverse*, but not loaded automatically) makes it easier:
 
 The functions `ymd()` `dmy()` etc., allow to parse strings containing "Year, Month, Date" values (in a given order)
 
