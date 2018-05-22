@@ -21,14 +21,14 @@ Load the packages for the session:
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ---------------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages -------------------------------------------------------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 2.2.1     v purrr   0.2.4
     ## v tibble  1.4.2     v dplyr   0.7.4
     ## v tidyr   0.8.0     v stringr 1.3.1
     ## v readr   1.1.1     v forcats 0.3.0
 
-    ## -- Conflicts ------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ----------------------------------------------------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -263,7 +263,7 @@ Applying functions to vector (list) elements with `map`
 
 `map(.x, .f)` applies a function `.f` to every element of a list or atomic vector `.x` Functions can be:
 
--   already defined in R: `sum`, `mean`, `filter`, `mutate`, ecc.
+-   already defined in R: `sum()`, `mean()`, `filter()`, `mutate()`, ecc.
 -   defined in place as “anonymous functions” `.f` with the syntax `~ .`, where `~` introduces a function and `.` is the argument
 
 ``` r
@@ -355,7 +355,7 @@ list(c(1, 2), c(3, 4, 5, 6), c(7, 8, 9)) %>% map(~ mean(.))
     ## [[3]]
     ## [1] 8
 
-we can map functions to list of string vectors as well. For instance, `collapse` takes a vector of character and pastes them together
+we can map functions to list of string vectors as well. For instance, `collapse()` takes a vector of character and pastes them together
 
 ``` r
 list(c("a", "b", "c"), c("hello", "bye"))
@@ -835,8 +835,6 @@ Dates are generally difficult! *lubridate* package (in *tidyverse*, but not load
 The functions `ymd()` `dmy()` etc., allow to parse strings containing "Year, Month, Date" values (in a given order)
 
 ``` r
-library(lubridate) # installed with tidyverse, but not loaded by default
-
 ymd("2018-05-17") # parse date Y-M-D
 ```
 
@@ -855,7 +853,19 @@ mdy("05.15.2018") # …and with different separators
     ## [1] "2018-05-15"
 
 ``` r
-mdy("05.15.2018") == dmy("15/05/2018") # they are parsed to identical representations
+typeof(ymd("2018-05-17")) # <date> objects are actually a double number (previewed in human-redable format)
+```
+
+    ## [1] "double"
+
+``` r
+mdy("05.15.2018") == dmy("15/05/2018") # they are parsed to identical representations…
+```
+
+    ## [1] TRUE
+
+``` r
+dmy("15/5/2018") == mdy("5/15/2018") # …even when inputs are written differently
 ```
 
     ## [1] TRUE
@@ -874,22 +884,14 @@ dmy("17 Maggio 2018") # also in non-English other locales!
 
 ``` r
 # Parse heterogeneous formats (still Y-M-D), but written differently
-c(
-  20090101, "2009-01-02", "2009 01 03", "2009-1-4",
-  "2009-1, 5", "Created on 2009 1 6", "200901 !!! 07"
-) %>% ymd()
+c(20090101, "2009-01-02", "2009 01 03", "2009-1-4",
+  "2009-1, 5", "Created on 2009 1 6", "200901 !!! 07") %>% ymd()
 ```
 
     ## [1] "2009-01-01" "2009-01-02" "2009-01-03" "2009-01-04" "2009-01-05"
     ## [6] "2009-01-06" "2009-01-07"
 
 Operations with dates:
-
-``` r
-typeof(ymd("2018-05-17")) # actually a double number previewed in human-redable format
-```
-
-    ## [1] "double"
 
 ``` r
 dmy("16/05/2018") > dmy("15/05/2018") # > means "after"
@@ -901,14 +903,14 @@ dmy("16/05/2018") > dmy("15/05/2018") # > means "after"
 today() # current date
 ```
 
-    ## [1] "2018-05-18"
+    ## [1] "2018-05-22"
 
 ``` r
 # extract components:
 today() %>% day()
 ```
 
-    ## [1] 18
+    ## [1] 22
 
 ``` r
 today() %>% month()
@@ -927,13 +929,13 @@ today() %>% quarter()
 today() %>% wday()
 ```
 
-    ## [1] 6
+    ## [1] 3
 
 ``` r
 today() %>% wday(label = TRUE)
 ```
 
-    ## [1] ven
+    ## [1] mar
     ## Levels: dom < lun < mar < mer < gio < ven < sab
 
 ``` r
@@ -952,50 +954,82 @@ today() %>% dst() # is it Daylight Savings Time?
 
 Date arithmetic is hard! Lots of conventions and unspoken assumptions. What does "a month from now" mean exactly?
 
+-   one month after 15 Jan 2018 =&gt; 15 Feb 2018 (31 days later)
+-   one month after 31 Jan 2018 =&gt; ?
+
+For this reason, we use the `%m+%` operator not to roll over months when adding dates.
+
 ``` r
-today() + days(1) # one day from now
+dmy("1 Jan 2018") + days(1) # one day later
 ```
 
-    ## [1] "2018-05-19"
+    ## [1] "2018-01-02"
 
 ``` r
-today() + months(1) # one month from now
+dmy("15 Jan 2018") + months(1) # one month later
 ```
 
-    ## [1] "2018-06-18"
+    ## [1] "2018-02-15"
+
+``` r
+dmy("31 Jan 2018") + months(1) # one month later?
+```
+
+    ## [1] NA
+
+``` r
+dmy("31 Jan 2018") %m+% months(1) # %m+% remains within 1 month after Jan
+```
+
+    ## [1] "2018-02-28"
+
+``` r
+# difference in dates
+dmy("1 Feb 2018") - dmy("1 feb 2016") # time difference expressed in days
+```
+
+    ## Time difference of 731 days
+
+``` r
+difftime(dmy("1 Feb 2018"), dmy("1 feb 2016"), units = "weeks") # …and in other units
+```
+
+    ## Time difference of 104.4286 weeks
 
 ``` r
 # Round dates:
-today() %>% floor_date(unit = "month") # round down to first day of month
+dmy("15/01/2018") %>% floor_date(unit = "month") # round down to first day of month
 ```
 
-    ## [1] "2018-05-01"
+    ## [1] "2018-01-01"
 
 ``` r
-today() %>% ceiling_date(unit = "month") # round up to first day of next month
+dmy("15/01/2018") %>% ceiling_date(unit = "month") # round up to first day of next month
 ```
 
-    ## [1] "2018-06-01"
+    ## [1] "2018-02-01"
 
 ``` r
-today() %>% ceiling_date(unit = "month") - days(1) # round up to last day of this month
+dmy("15/01/2018") %>% ceiling_date(unit = "month") - days(1) # round up to last day of this month
 ```
 
-    ## [1] "2018-05-31"
+    ## [1] "2018-01-31"
 
 ``` r
-today() %>% rollback() # round down to last day of previous month
+dmy("15/01/2018") %>% rollback() # round down to last day of previous month
 ```
 
-    ## [1] "2018-04-30"
+    ## [1] "2017-12-31"
 
 ``` r
-today() %>% rollback(roll_to_first = T) # round down first day of same month
+dmy("15/01/2018") %>% rollback(roll_to_first = T) # round down first day of same month
 ```
 
-    ## [1] "2018-05-01"
+    ## [1] "2018-01-01"
 
 ### Construct dates from separate columns:
+
+Sometimes tibbles may contain dates split in `year`, `month`, `day` numeric variables. We can construct well-defined date objects by combining them with `unite()` and parsing them with `ymd()`
 
 ``` r
 flights %>% select(year, month, day) # separate year, month, day (integer) variables
@@ -1069,7 +1103,7 @@ dmy("16/05-2018", tz = "Europe/Rome") == dmy("16/05-2018", tz = "Europe/London")
 
 ### Higher- and lower- resolution dates and time
 
-`dmy_hms` (and obvious permutations) parse date and times to seconds:
+`dmy_hms()` (and obvious permutations) parse date and times to seconds:
 
 ``` r
 # Using different representations:
@@ -1102,7 +1136,7 @@ dmy_hms("17-05-2018 8-22-3")
 
     ## [1] "2018-05-17 08:22:03 UTC"
 
-`hms` parses time-of-day values:
+`hms()` parses time-of-day values:
 
 ``` r
 # Using different representations:
