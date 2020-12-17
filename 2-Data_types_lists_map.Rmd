@@ -43,6 +43,7 @@ library(glue) # tidyverse, not loaded by default
 * `<dttm>` **date-time**
 
 ```{r}
+flights <- data("flights", package = "nycflights13")
 flights %>% glimpse()
 ```
 
@@ -346,7 +347,7 @@ flights %>%
 
 What's in a date? Obviously *day*, *month*, *year*. But also time zone! (by default UTC)
 ```{r}
-dmy("16/05-2018", tz = "Europe/Rome") == dmy("16/05-2018", tz = "Europe/London")
+dmy("16/05/2018", tz = "Europe/Rome") == dmy("16/05/2018", tz = "Europe/London")
 ```
 
 

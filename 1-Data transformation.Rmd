@@ -42,39 +42,51 @@ library(lubridate) # tidyverse, not loaded by default
 
 ## Load example data
 
-load the `flights` dataset from *nycflights13*:
+Using the function `data()` we retrieve the `flights` dataset from package *nycflights13*
 ```{r}
-data(flights)
+data("flights", package = "nycflights13")
 ```
 
-## Preview, `glimpse` and `View` data
 
-Preview the data by invoking it: notice that not all variables are displayed for lack of space.
+## Preview, `glimpse()` and `View()` data
+
+Preview the data by invoking it: notice that not all variables are shown, for lack of space.
 ```{r}
 flights
 ```
 
-`glimpse` shows all variables as rows, variable types, and a preview of first few observations.
+`glimpse()` shows all variables as rows, variable types, and a preview of first few observations.
 ```{r}
 glimpse(flights)
 ```
 
-`View` shows the whole dataset in a dedicated tab of RStudio
+Remember that `data %>% function()` is equivalent to `function(data)`.
+
+`View()` shows the whole dataset in a dedicated tab of RStudio
 ```{r, eval=FALSE}
-View(flights)
+flights %>% View()
 ```
 
 
-## `filter` rows matching conditions
+## `filter()` rows matching conditions
 
-Keep only observations such that month = 1 AND day = 1
+Keep only observations such that month = 1 AND day = 1.
 ```{r}
 flights %>% filter(month == 1, day == 1)
 ```
 
-Logical operators include:
+Notice that this does not change the underlying structure of `flights`! It merely displays (a preview of) the results of `filter(flights, month == 1, day == 1)`.
+We can put the results to a new table (and not preview them) with the assignment operator `<-` (or `->`)
 
-* `==` strict equality
+```{r}
+flights_jan_first <- flights %>% filter(month == 1, day == 1) # put results into new object called `flights_jan_first`
+
+flights %>% filter(month == 1, day == 1) -> flights_jan_first # equivalent syntax. Notice that we are overwriting `flights_jan_first`
+```
+
+Logical operators to filter observations include:
+
+* `==` to test for (strict) equality
 * `>`, `<`, `>=`, `<=` inequalities
 * `%in%` to test if element belongs to list
 * `is.na()` to test for missing value `NA`
@@ -85,21 +97,25 @@ Multiple conditions:
 * `,` or `&` as logical AND
 
 ```{r}
+# filter observations in the months of February and April
 flights %>% filter(month %in% c(2, 4))
+
+# filter observations in the months of February and April AND from United Airlines
+flights %>% filter(month %in% c(2, 4) & carrier == "UA") 
 ```
 
 
 ## `select` and `pull` variables
 
 We can select columns by name; the result is always a tibble.
-Pressing TAB with the cursorinside `select( )` provides variable name completion. 
+Pressing TAB with the cursor inside `select( | )` provides variable name completion. 
 ```{r}
 flights %>% select(year, month, day, dep_time, dep_delay)
 ```
 
 We can also select columns based on patterns in their names:
 ```{r}
-flights %>% select(contains("dep"), starts_with("sched"))
+flights %>% select(contains("time"), starts_with("sched"))
 ```
 
 or select intervals based on position (careful!)
@@ -119,7 +135,7 @@ flights %>% pull(carrier) %>% sort() %>% unique()
 ```
 
 
-## `summarise` values
+## `summarise()` values
 
 We can compute one or more variable summaries for the whole dataset (column-wise) using `summarise`.
 
@@ -159,15 +175,14 @@ flights %>%
 ```
 
 
-## `mutate` observations
+## Change variables with `mutate()`
 
-Mutate adds new variables based on functions provided while preserving existing ones, 
-
+Mutate adds new variables based on functions provided while preserving existing ones:
 ```{r}
 flights %>%
   mutate(
-    distance_k = distance / 1000,
-    air_time_h = air_time / 60
+    dist_km = distance / 1000, # creates new variable dist_km from distance
+    air_time = air_time / 60 # replaces air_time
   ) %>%
   select(starts_with("distance"), starts_with("air_time"))
 ```
@@ -214,9 +229,9 @@ flights %>% top_n(10, arr_delay)
 ```
 
 
-## Keep unique rows with `distinct`
+## Keep unique rows with `distinct()`
 
-`distinct` finds unique combinations of  *rows in tibbles*, while `unique` finds unique *elements in vectors*
+`distinct()` finds unique combinations of  *rows in tibbles*, while `unique()` finds unique *elements in vectors*
 
 What are the destination from each airport?
 ```{r}
@@ -230,12 +245,11 @@ flights %>% distinct(origin, dest, .keep_all = TRUE)
 ```
 
 
-## `join` (merge) tibbles by value
+## `join()` (merge) tibbles by value
 
 `airlines` in *nycflights13* contains the full names of airlines, reported as `carrier`in flights
 ```{r}
-data("airlines")
-airlines
+airlines <- data("airlines", package = "nycflights13")
 ```
 
 Do `airlines` and `flights` have variables in common
@@ -267,7 +281,7 @@ Then we can join the tibbles, to add `name` (full carrier name) from `airlines` 
 
 `left_join(x, y, by)` return all rows from x where there are matching values in y, and all columns from x and y. If there are multiple matches between x and y, all combination of the matches are returned.
 
-See also `right_join`, `full_join`, `inner_join`, `anti_join`...
+See also `right_join()`, `full_join()`, `inner_join()`, `anti_join()`, etc.
 we use `select(new_name = name)` to rename variables on the spot.
 
 ```{r}

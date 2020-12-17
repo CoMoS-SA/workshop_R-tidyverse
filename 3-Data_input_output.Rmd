@@ -9,14 +9,14 @@ editor_options:
 
 ## Packages for this session
 
-|    package    |             purpose              |       installation       |
-| ------------- | -------------------------------- | ------------------------ |
-| *tidyverse*   | everything                       | CRAN                     |
-| *nycflight13* | example datasets                 | CRAN                     |
-| *lubridate*   | working with dates               | bundled with *tidyverse* |
-| *glue*        | pasting and interpreting strings | bundled with *tidyverse* |
-| *readxl*      | read Excel files                 | bundled with *tidyverse* |
-| *naniar*      | handling of NA (missing values)  | CRAN                     |
+|    package    |             purpose              |        installation        |
+| ------------- | -------------------------------- | -------------------------- |
+| *tidyverse*   | everything                       | CRAN                       |
+| *nycflight13* | example datasets                 | CRAN                       |
+| *lubridate*   | working with dates               | installed with *tidyverse* |
+| *glue*        | pasting and interpreting strings | installed with *tidyverse* |
+| *readxl*      | read Excel files                 | installed with *tidyverse* |
+| *naniar*      | handling of NA (missing values)  | CRAN                       |
 
 
 If not yet installed, download packages with `install.packages("name")`.
@@ -38,15 +38,15 @@ library(glue) # tidyverse, not loaded by default
 
 
 ## Data input and output
-Import a table with `read_csv` (NB, different than `read.csv`!).
-`read_csv` parses variables by guessing the column types based on heuristics:
+Import a table with `read_csv()` (NB, different from `read.csv()`).
+`read_csv()` parses variables by guessing the column types based on heuristics:
 ```{r}
 flights_import <- read_csv("./data/flights.csv")
 
 glimpse(flights_import)
 ```
 
-inspect the data using `miss_var_summary` from *naniar* to see how many are missing:
+inspect the data using `miss_var_summary()` from *naniar* to see how many are missing:
 ```{r}
 flights_import %>% miss_var_summary()
 
@@ -85,7 +85,7 @@ we can also specify column types manually:
 challenge <- read_csv("./data/challenge.csv", col_types = list(x = col_double(), y = col_date()))
 ```
 
-_pro-tip__: import problematic columns as character and inspect them:
+**pro-tip**: import problematic columns as character and inspect them:
 ```{r, R.options=list(max.print=20)}
 challenge <- read_csv("./data/challenge.csv", col_types = list(x = col_character(), y = col_character()))
 
@@ -93,7 +93,7 @@ challenge %>% pull(y) %>% sort() %>% unique()
 challenge %>% pull(x) %>% sort() %>% unique()
 ```
 
-`readr` tries to guess the type of object based on heuristics:
+*readr* tries to guess the type of object based on heuristics. `guess_parser()` shows what type of object would be guessed for sample string vectors:
 ```{r}
 guess_parser("123")
 guess_parser("1,234")
@@ -113,7 +113,7 @@ flights_import <- read_csv("https://raw.githubusercontent.com/CoMoS-SA/workshop-
 
 
 ## Importing Excel files with *readxl*
-We can import Excel workbooks with `read_excel`: it works with `.xlsx` and `.xls` files.
+We can import Excel workbooks with `read_excel()`: it works with `.xlsx` and `.xls` files.
 ```{r}
 # Enumerate sheets in the workbook
 excel_sheets("./data/nycflights.xlsx")
@@ -122,7 +122,7 @@ excel_sheets("./data/nycflights.xlsx")
 flights_xl <- read_excel("./data/nycflights.xlsx", sheet = "Flights")
 airlines_xl <- read_excel("./data/nycflights.xlsx", sheet = "Airlines")
 ```
-NB: the package *readxl* does not provide functions to *export* Excel workbooks, but the package `openxls` does.
+NB: the package *readxl* does not provide functions to *export* Excel workbooks, but the package *openxls* does.
 
 
 ## Importing and exporting Stata `.dta` files using *haven*
@@ -169,7 +169,6 @@ flights_frac <- list.files("./data/scattered/", full.names = TRUE) %>%
   map(~ read_csv(.)) %>%
   bind_rows()
 ```
-
 
 `map_df` maps the function directly into a tibble
 ```{r}
